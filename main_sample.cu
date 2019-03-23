@@ -4,7 +4,7 @@
 #include <cusparse_v2.h>
 #include <thrust/device_vector.h>
 #include "csrmatrix.h"
-#include "sparsematrix.h"
+#include "sparse.h"
 #include "ConjugateGradient.h"
 
 

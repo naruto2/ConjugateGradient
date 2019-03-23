@@ -2,7 +2,7 @@
 using namespace std;
 using namespace thrust;
 
-int ConjugateGradient(sparse::matrix<double> spA, double* x, double* b)
+int ConjugateGradient(matrix<double> spA, double* x, double* b)
 {
   long N = spA.size();
   double alpha, beta, normr0, normr, rhop, rho, temp, tol = 0.000000001;

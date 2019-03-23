@@ -1,9 +1,9 @@
-#ifndef SPARSE_H
-#define SPARSE_H
+#ifndef CUSTO_H
+#define CUSTO_H
 #include <map>
 #include <vector>
 
-namespace sparse {
+namespace custo {
 
   using namespace std;
 
@@ -25,5 +25,4 @@ namespace sparse {
   };
 #include "printmatrix.h"
 }
-  
 #endif

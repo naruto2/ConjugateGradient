@@ -4,9 +4,11 @@
 #include <cusparse_v2.h>
 #include <thrust/device_vector.h>
 #include "csrmatrix.h"
-#include "sparse.h"
-#include "ConjugateGradient.h"
+#include "simple.h"
+#include "custo.h"
 
+using namespace custo;
+#include "ConjugateGradient.h"
 
 int main()
 {
@@ -14,7 +16,7 @@ int main()
       /********** 入力値の準備 **********/
       /**********************************/
       long N = 1024;
-      sparse::matrix<double> A(N);
+      matrix<double> A(N);
 
 	// 中央差分行列を準備する
 	//（対角項が2でその隣が1になる、↓こんなやつ）
@@ -45,6 +47,7 @@ int main()
       for (long i = 0; i < N; i++) b[i] = 0.0;
 
       ConjugateGradient(A,x,b);
+
       for (long i = 0; i < N; i++) cout << x[i] << endl;
       delete[] x;
       delete[] b;

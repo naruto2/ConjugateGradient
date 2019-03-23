@@ -23,10 +23,13 @@ namespace sparse {
 
     Real& operator [] ( const long i )  // 書き込み用
     {
+      for ( auto it : mp ) {
+	if (it.second == 0.0) mp.erase(it.first);
+      }
       return mp[i];
     }
     map<long,double>::iterator begin(){ return mp.begin();}
-    map<long,double>::iterator end(){ return mp.end();}
+    map<long,double>::iterator end()  { return mp.end();}
   };
 
   

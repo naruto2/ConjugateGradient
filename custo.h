@@ -7,7 +7,7 @@ namespace custo {
 
   using namespace std;
 
-  template<typename Real> class customap : public map<long, Real> {
+  template<typename Real> class customap {
     map<long, Real> mp;
   public:
     auto& operator []( const long i ) {

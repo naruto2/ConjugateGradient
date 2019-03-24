@@ -55,6 +55,7 @@ void matrix2CRS(matrix<double> &A,
   CRS.row_ptr          = dev(row_ptrDev);
 }
 
+#include "d.h"
 
 int ConjugateGradient(matrix<double>& A, double* x, double* b)
 {
@@ -105,18 +106,19 @@ int ConjugateGradient(matrix<double>& A, double* x, double* b)
 
   // CRSmv（CRS形式行列とベクトルの積）を実行
   // y = Ax
-  { long i;
-    for (i = 0; i< N; i++) if ( b[i] != 0.0 ) break;
-    if ( i >= N ) y_Ax(dev(bDev), CRS, dev(xnDev));
-  }
+  Dclass D(CRS);
 
-  y_Ax(dev(rDev), CRS, dev(xDev));
+  long i;
+  for (i = 0; i< N; i++) if ( b[i] != 0.0 ) break;
+  if ( i >= N ) D.matvec(bDev, CRS, xnDev);
 
+  D.matvec(rDev, CRS, xDev);
+  
   alpha = -1.0;
-  cublasDscal(CRS.cublas, N, &alpha, dev(rDev), 1);
-
+  D.scal(N, &alpha, rDev, 1);
+  
   alpha = 1.0;
-  cublasDaxpy(CRS.cublas,N, &alpha, dev(bDev), 1, dev(rDev), 1);
+  D.axpy(N, &alpha, bDev, 1, rDev, 1);
 
   cublasDnrm2(CRS.cublas, N, dev(rDev), 1, &normr0);
   if ( normr0 == 0.0 ) return 0;
@@ -136,23 +138,23 @@ int ConjugateGradient(matrix<double>& A, double* x, double* b)
       //8: \beta = rho_{i} / \rho_{i-1}
       beta = rho/rhop;
       //9: p = z + \beta p
-      cublasDaxpy(CRS.cublas, N, &beta, dev(pDev), 1, dev(zDev), 1);
+      D.axpy(N, &beta, pDev, 1, zDev, 1);
       cublasDcopy(CRS.cublas, N, dev(zDev), 1, dev(pDev), 1);
     }
 
     //11: Compute q = Ap (sparse matrix-vector multiplication)
-    y_Ax(dev(qDev), CRS, dev(pDev));
+    D.matvec(qDev, CRS, pDev);
 
     //12: \alpha = \rho_{i} / (p^{T} q)
     cublasDdot(CRS.cublas, N, dev(pDev), 1, dev(qDev), 1, &temp);
 
     //13: x = x + \alpha p
     alpha = rho/temp;
-    cublasDaxpy(CRS.cublas, N, &alpha, dev(pDev), 1, dev(xDev), 1);
-
+    D.axpy(N, &alpha, pDev, 1, xDev, 1);
+    
     //14: r = r - \alpha q
     alpha = -alpha;
-    cublasDaxpy(CRS.cublas, N, &alpha, dev(qDev), 1, dev(rDev), 1);
+    D.axpy(N, &alpha, qDev, 1, rDev, 1);
     
     //check for convergence
     cublasDnrm2(CRS.cublas, N, dev(rDev), 1, &normr);

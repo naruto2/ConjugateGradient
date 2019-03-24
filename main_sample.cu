@@ -3,7 +3,7 @@
 #include <cublas_v2.h>
 #include <cusparse_v2.h>
 #include <thrust/device_vector.h>
-#include "csrmatrix.h"
+#include "crs.h"
 #include "simple.h"
 #include "custo.h"
 

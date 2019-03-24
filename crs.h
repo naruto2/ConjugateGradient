@@ -7,20 +7,20 @@ typedef struct {
   cusparseHandle_t   cusparse;
   cusparseMatDescr_t matDescr;
   long N;
-  long nonZeroCount;
-  double* elementsPtr;
-  int* columnIndecesPtr;
-  int* rowOffsetsPtr;
-} CsrMatrix;
+  long n;
+  double* val;
+  int*    col_ind;
+  int*    row_ptr;
+} CRSdata;
 
 
-int cublas_cusparse_init(CsrMatrix* Ap)
+int cublas_cusparse_init(CRSdata& CRS)
 {
   /************************************/
   /********** cuBLASの準備 ************/
   /************************************/
   // cuBLASハンドルを作成
-  cublasStatus_t stat =cublasCreate(&Ap->cublas);
+  cublasStatus_t stat =cublasCreate(&CRS.cublas);
   if (stat != CUBLAS_STATUS_SUCCESS) {
     cout<<"cuBLAS initialization failed"<<endl;
     return EXIT_FAILURE;
@@ -29,7 +29,7 @@ int cublas_cusparse_init(CsrMatrix* Ap)
   /********** cuSPARSEの準備 **********/
   /************************************/
   // cuSPARSEハンドルを作成
-  cusparseStatus_t cusparsestat = cusparseCreate(&Ap->cusparse);
+  cusparseStatus_t cusparsestat = cusparseCreate(&CRS.cusparse);
   if (cusparsestat != CUSPARSE_STATUS_SUCCESS) {
     cout<<"cuSPARSE initialization failed"<<endl;
     return EXIT_FAILURE;
@@ -37,28 +37,36 @@ int cublas_cusparse_init(CsrMatrix* Ap)
   // 行列形式を作成
   // * 一般的な形式
   // * 番号は0から開始
-  cusparsestat =   cusparseCreateMatDescr(&Ap->matDescr);
+  cusparsestat =   cusparseCreateMatDescr(&CRS.matDescr);
   if (cusparsestat != CUSPARSE_STATUS_SUCCESS) {
     cout<<"cuSPARSE initialization failed(cusparseCreateMatDescr)"<<endl;
     return EXIT_FAILURE;
   }
-  cusparseSetMatType(Ap->matDescr, CUSPARSE_MATRIX_TYPE_GENERAL);
-  cusparseSetMatIndexBase(Ap->matDescr, CUSPARSE_INDEX_BASE_ZERO);
+  cusparseSetMatType(CRS.matDescr, CUSPARSE_MATRIX_TYPE_GENERAL);
+  cusparseSetMatIndexBase(CRS.matDescr, CUSPARSE_INDEX_BASE_ZERO);
 
   return 0;
 }
 
-void y_Ax(double* resultPtr, CsrMatrix A, double* vectorPtr)
+
+void CRSdataDestory(CRSdata& CRS) {
+  cublasDestroy(CRS.cublas);
+  cusparseDestroy(CRS.cusparse);
+  cusparseDestroyMatDescr(CRS.matDescr);
+}
+
+
+void y_Ax(double* resultPtr, CRSdata CRS, double* vectorPtr)
 {
-  // Csrmv（CSR形式行列とベクトルの積）を実行
+  // CRSmv（CRS形式行列とベクトルの積）を実行
   // y = α*Ax + β*y;
   const double ALPHA = 1;
   const double BETA = 0;
-  ::cusparseDcsrmv(A.cusparse, CUSPARSE_OPERATION_NON_TRANSPOSE,
-		   A.N, A.N, A.nonZeroCount,
-		   &ALPHA, A.matDescr, A.elementsPtr, A.rowOffsetsPtr, A.columnIndecesPtr,
-		   vectorPtr,
-		   &BETA, resultPtr);
+  cusparseDcsrmv(CRS.cusparse, CUSPARSE_OPERATION_NON_TRANSPOSE,
+		 CRS.N, CRS.N, CRS.n,
+		 &ALPHA, CRS.matDescr, CRS.val, CRS.row_ptr, CRS.col_ind,
+		 vectorPtr,
+		 &BETA, resultPtr);
 }
 
 

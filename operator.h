@@ -1,5 +1,3 @@
-static CRSdata gCRS;
-
 
 double dot(const device_vector<double>&x, const device_vector<double>&y){
   double rho;

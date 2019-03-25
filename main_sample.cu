@@ -3,11 +3,14 @@
 #include <cublas_v2.h>
 #include <cusparse_v2.h>
 #include <thrust/device_vector.h>
-#include "crs.h"
 #include "simple.h"
 #include "custo.h"
-
+using namespace std;
+using namespace thrust;
 using namespace custo;
+#include "crs.h"
+#include "d.h"
+#include "operator.h"
 #include "ConjugateGradient.h"
 
 int main()

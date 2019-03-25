@@ -1,6 +1,6 @@
-#ifndef CSRMATRIX_H
-#define CSRMATRIX_H
-using namespace std;
+#ifndef CSR_H
+#define CSR_H
+#define dev(someDev) thrust::raw_pointer_cast(&(someDev)[0])
 
 typedef struct {
   cublasHandle_t     cublas;
@@ -13,6 +13,7 @@ typedef struct {
   int*    row_ptr;
 } CRSdata;
 
+static CRSdata gCRS;
 
 int cublas_cusparse_init(CRSdata& CRS)
 {
@@ -49,10 +50,71 @@ int cublas_cusparse_init(CRSdata& CRS)
 }
 
 
-void CRSdataDestory(CRSdata& CRS) {
-  cublasDestroy(CRS.cublas);
-  cusparseDestroy(CRS.cusparse);
-  cusparseDestroyMatDescr(CRS.matDescr);
+
+long countelements(matrix<double> &A) {
+  long N=A.size();
+  long n=0;
+  for (long i=0; i<N; i++) for ( auto it : A[i] ) n++;
+  return n;
+}
+
+
+void matrix2CRS(matrix<double> &A, CRSdata &CRS) {
+  long N = A.size();
+  long n = countelements(A);
+
+  static device_vector<double>     valDev(n);
+  static device_vector<int>    col_indDev(n);
+  static device_vector<int>    row_ptrDev(N+1);
+
+  double*  val = new double[n];;
+  int*     col_ind = new int[n];
+  int*     row_ptr = new int[N+1];
+
+  if ( val == NULL || col_ind == NULL || row_ptr == NULL ) {
+    fprintf(stderr,"Out of memory\n");
+    exit(1);
+  }
+
+  n=0;
+  for (long i=0; i<N; i++){
+    row_ptr[i] = n;
+    for ( auto it : A[i] ) {
+      long j=it.first;
+      val[n] = A[i][j];
+      col_ind[n] = j;
+      n++;
+    }
+  }
+  row_ptr[N] = n;
+
+  copy_n(val,       n, valDev.begin());
+  copy_n(col_ind,   n, col_indDev.begin());
+  copy_n(row_ptr, N+1, row_ptrDev.begin());
+  delete[] val;
+  delete[] col_ind;
+  delete[] row_ptr;
+
+  CRS.N                = N;
+  CRS.n                = n;
+  CRS.val              = dev(valDev);
+  CRS.col_ind          = dev(col_indDev);
+  CRS.row_ptr          = dev(row_ptrDev);
+}
+
+
+void CRSinit(matrix<double>& A)
+{
+  if ( cublas_cusparse_init(gCRS) != 0 )
+    exit(EXIT_FAILURE);
+  matrix2CRS(A, gCRS);
+}
+
+
+void CRSdataDestory(void) {
+  cublasDestroy(gCRS.cublas);
+  cusparseDestroy(gCRS.cusparse);
+  cusparseDestroyMatDescr(gCRS.matDescr);
 }
 
 

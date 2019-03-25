@@ -56,13 +56,14 @@ void matrix2CRS(matrix<double> &A,
 }
 
 #include "d.h"
+#include "operator.h"
 
 int ConjugateGradient(matrix<double>& A, double* x, double* b)
 {
   long N = A.size();
   long n = countelements(A);
   
-  double alpha, beta, normr0, normr, rhop, rho, temp, tol = 0.000000001;
+  double alpha, beta, normr0, normr, rhop, rho, tol = 0.000000001;
   long maxit = 2*N;
   CRSdata CRS;
   if ( cublas_cusparse_init(CRS) != 0 )
@@ -107,58 +108,50 @@ int ConjugateGradient(matrix<double>& A, double* x, double* b)
   // CRSmv（CRS形式行列とベクトルの積）を実行
   // y = Ax
   Dclass D(CRS);
+  gCRS = CRS;
 
   long i;
   for (i = 0; i< N; i++) if ( b[i] != 0.0 ) break;
-  if ( i >= N ) D.matvec(bDev, CRS, xnDev);
+  if ( i >= N ) bDev =  A * xnDev;
 
-  D.matvec(rDev, CRS, xDev);
-  
-  alpha = -1.0;
-  D.scal(N, &alpha, rDev, 1);
-  
-  alpha = 1.0;
-  D.axpy(N, &alpha, bDev, 1, rDev, 1);
+  rDev = A * xDev;
 
-  cublasDnrm2(CRS.cublas, N, dev(rDev), 1, &normr0);
+  rDev = -1.0 * rDev;
+
+  rDev = rDev + bDev;
+  
+  normr0 = nrm2(rDev);
+
   if ( normr0 == 0.0 ) return 0;
 
   for (long i=0; i<maxit; i++){
-    cublasDcopy(CRS.cublas, N, dev(rDev), 1, dev(zDev), 1);
     // 本来は Mz = r
+    zDev = rDev;
 
-    //4: \rho = r^{T} z
     rhop = rho;
-    cublasDdot(CRS.cublas, N, dev(rDev), 1, dev(zDev), 1, &rho);
+
+    rho = dot(rDev, zDev);
 
     if ( i == 0 ){
-      //6: p = z
-      cublasDcopy(CRS.cublas, N, dev(zDev), 1, dev(pDev), 1);
+      pDev = zDev;
     } else {
-      //8: \beta = rho_{i} / \rho_{i-1}
       beta = rho/rhop;
-      //9: p = z + \beta p
-      D.axpy(N, &beta, pDev, 1, zDev, 1);
-      cublasDcopy(CRS.cublas, N, dev(zDev), 1, dev(pDev), 1);
+
+      zDev = zDev + beta * pDev;
+
+      pDev = zDev;
     }
 
-    //11: Compute q = Ap (sparse matrix-vector multiplication)
-    D.matvec(qDev, CRS, pDev);
+    qDev = A * pDev;
 
-    //12: \alpha = \rho_{i} / (p^{T} q)
-    cublasDdot(CRS.cublas, N, dev(pDev), 1, dev(qDev), 1, &temp);
+    alpha = rho/dot(pDev,qDev);
 
-    //13: x = x + \alpha p
-    alpha = rho/temp;
-    D.axpy(N, &alpha, pDev, 1, xDev, 1);
-    
-    //14: r = r - \alpha q
-    alpha = -alpha;
-    D.axpy(N, &alpha, qDev, 1, rDev, 1);
-    
-    //check for convergence
-    cublasDnrm2(CRS.cublas, N, dev(rDev), 1, &normr);
-    //cout << normr/normr0 <<endl;
+    xDev = xDev + alpha * pDev;
+
+    rDev = rDev - alpha * qDev;
+
+    normr = nrm2(rDev);
+
     if ( normr/normr0 < tol ) break;
   }
   CRSdataDestory(CRS);

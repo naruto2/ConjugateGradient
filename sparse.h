@@ -1,9 +1,9 @@
-#ifndef CUSTO_H
-#define CUSTO_H
+#ifndef SPARSE_H
+#define SPARSE_H
 #include <map>
 #include <vector>
 
-namespace custo {
+namespace sparse {
 
   using namespace std;
 
@@ -29,6 +29,5 @@ namespace custo {
     device_matrix(long n) : matrix<Real>(n){}
   };
   
-#include "printmatrix.h"
 }
 #endif

@@ -8,9 +8,9 @@ using namespace thrust;
 
 #include <iostream>
 #include <cmath>
-#include "custo.h"
+#include "sparse.h"
 using namespace std;
-using namespace custo;
+using namespace sparse;
 #include "crs.h"
 #include "operator.h"
 #include "ConjugateGradient.h"
@@ -21,9 +21,13 @@ int main()
       /********** 入力値の準備 **********/
       /**********************************/
       long i, n = 1024;
-      matrix<double> A(n);
+#ifndef noGPU
+      device_matrix<double> A(n);      
+      device_vector<double> x(n), b(n);
+#else
+      matrix<double> A(n);       
       vector<double> x(n), b(n);
-
+#endif      
         // 中央差分行列を準備する
 	//（対角項が2でその隣が1になる、↓こんなやつ）
 	// | 2 1 0 0 0 0 0 0 ・・・ 0 0 0|

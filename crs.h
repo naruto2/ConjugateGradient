@@ -114,7 +114,7 @@ void CRSinit(device_matrix<double>& A)
 }
 
 
-void CRSdataDestory(device_matrix<double>& A) {
+void CRSdestory(device_matrix<double>& A) {
   cublasDestroy(gCRS.cublas);
   cusparseDestroy(gCRS.cusparse);
   cusparseDestroyMatDescr(gCRS.matDescr);
@@ -158,7 +158,7 @@ void printDev(long N, thrust::device_vector<double> someDev)
 void CRSinit(matrix<double>& A)
 {
 }
-void CRSdataDestory(matrix<double>& A) {
+void CRSdestory(matrix<double>& A) {
 }
 
 #endif

@@ -57,6 +57,6 @@ int ConjugateGradient(S& A, T& x, T& b)
   }
 
  end:
-  CRSdataDestory(A);
+  CRSdestory(A);
   return 0;
 }

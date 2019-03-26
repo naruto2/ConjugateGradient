@@ -53,7 +53,7 @@ int cublas_cusparse_init(CRSdata& CRS)
 
 
 
-long countelements(matrix<double> &A) {
+long countelements(device_matrix<double> &A) {
   long N=A.size();
   long n=0;
   for (long i=0; i<N; i++) for ( auto it : A[i] ) n++;
@@ -61,7 +61,7 @@ long countelements(matrix<double> &A) {
 }
 
 
-void matrix2CRS(matrix<double> &A, CRSdata &CRS) {
+void matrix2CRS(device_matrix<double> &A, CRSdata &CRS) {
   long N = A.size();
   long n = countelements(A);
 
@@ -104,8 +104,11 @@ void matrix2CRS(matrix<double> &A, CRSdata &CRS) {
   CRS.row_ptr          = dev(row_ptrDev);
 }
 
-
 void CRSinit(matrix<double>& A)
+{
+}
+
+void CRSinit(device_matrix<double>& A)
 {
   if ( cublas_cusparse_init(gCRS) != 0 )
     exit(EXIT_FAILURE);
@@ -113,12 +116,14 @@ void CRSinit(matrix<double>& A)
 }
 
 
-void CRSdataDestory(void) {
+void CRSdataDestory(device_matrix<double>& A) {
   cublasDestroy(gCRS.cublas);
   cusparseDestroy(gCRS.cusparse);
   cusparseDestroyMatDescr(gCRS.matDescr);
 }
 
+void CRSdataDestory(matrix<double>& A) {
+}
 
 void y_Ax(double* resultPtr, CRSdata CRS, double* vectorPtr)
 {

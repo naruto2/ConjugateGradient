@@ -23,6 +23,12 @@ namespace custo {
   public:
     matrix(long n) : vector< customap<Real> >(n){}
   };
+
+  template<typename Real> class device_matrix : public matrix<Real> {
+  public:
+    device_matrix(long n) : matrix<Real>(n){}
+  };
+  
 #include "printmatrix.h"
 }
 #endif

@@ -19,7 +19,7 @@ int main()
       /********** 入力値の準備 **********/
       /**********************************/
       long i, n = 1024;
-      matrix<double> A(n);
+      device_matrix<double> A(n);
       device_vector<double> x(n), b(n);
 
         // 中央差分行列を準備する

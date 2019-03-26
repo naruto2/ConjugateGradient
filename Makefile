@@ -1,4 +1,4 @@
-a.out: main_sample.cu ConjugateGradient.h crs.h simple.h custo.h printmatrix.h
+a.out: main_sample.cu ConjugateGradient.h crs.h simple.h custo.h printmatrix.h operator.h
 	nvcc main_sample.cu -lcusparse -lcublas
 
 clean: ;

@@ -1,5 +1,5 @@
-template<typename T> 
-int ConjugateGradient(matrix<double>& A, T& x, T& b)
+template<typename S, typename T> 
+int ConjugateGradient(S& A, T& x, T& b)
 {
   CRSinit(A);
 
@@ -13,7 +13,7 @@ int ConjugateGradient(matrix<double>& A, T& x, T& b)
   for (i = 0; i< n; i++)
     if ( b[i] != 0.0 ) break;
   if ( i >= n ) b =  A * x0;
-  
+
   r = A * x;
   
   r = -1.0 * r;
@@ -24,7 +24,7 @@ int ConjugateGradient(matrix<double>& A, T& x, T& b)
   
   if ( normr0 == 0.0 ) goto end;
   
-  for (i = 0; i<maxit; i++){
+  for (i = 0; i < maxit; i++){
 
     z = r;    // 本来は Mz = r
 
@@ -32,6 +32,7 @@ int ConjugateGradient(matrix<double>& A, T& x, T& b)
 
     rho = dot(r, z);
 
+    
     if ( i == 0 ){
       p = z;
     } else {
@@ -56,6 +57,6 @@ int ConjugateGradient(matrix<double>& A, T& x, T& b)
   }
 
  end:
-  CRSdataDestory();
+  CRSdataDestory(A);
   return 0;
 }

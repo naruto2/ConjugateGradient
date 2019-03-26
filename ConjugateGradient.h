@@ -1,10 +1,10 @@
-int ConjugateGradient(matrix<double>& A, double* x1, double* b1)
+template<typename T> 
+int ConjugateGradient(matrix<double>& A, T& x, T& b)
 {
   CRSinit(A);
 
   long i, n = A.size();
-  device_vector<double> x0(n), x(n), b(n), z(n), p(n), q(n), r(n);
-  copy_n(x1, n, x.begin()); copy_n(b1, n, b.begin());
+  T x0(n), z(n), p(n), q(n), r(n);
   double alpha, beta, normr0, normr, rhop, rho, tol = 0.000000001;
   long maxit = 2*n;
 
@@ -24,7 +24,7 @@ int ConjugateGradient(matrix<double>& A, double* x1, double* b1)
   
   if ( normr0 == 0.0 ) goto end;
   
-  for (long i=0; i<maxit; i++){
+  for (i = 0; i<maxit; i++){
 
     z = r;    // 本来は Mz = r
 
@@ -57,6 +57,5 @@ int ConjugateGradient(matrix<double>& A, double* x1, double* b1)
 
  end:
   CRSdataDestory();
-  copy_n(x.begin(), n, x1);
   return 0;
 }

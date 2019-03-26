@@ -2,7 +2,8 @@
 #define CSR_H
 #define dev(someDev) thrust::raw_pointer_cast(&(someDev)[0])
 
-typedef struct {
+class CRSdata {
+ public:
   cublasHandle_t     cublas;
   cusparseHandle_t   cusparse;
   cusparseMatDescr_t matDescr;
@@ -11,7 +12,8 @@ typedef struct {
   double* val;
   int*    col_ind;
   int*    row_ptr;
-} CRSdata;
+};
+
 
 static CRSdata gCRS;
 

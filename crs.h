@@ -2,6 +2,7 @@
 #define CSR_H
 #define dev(someDev) thrust::raw_pointer_cast(&(someDev)[0])
 
+#ifndef noGPU
 class CRSdata {
  public:
   cublasHandle_t     cublas;
@@ -16,6 +17,7 @@ class CRSdata {
 
 
 static CRSdata gCRS;
+
 
 int cublas_cusparse_init(CRSdata& CRS)
 {
@@ -104,10 +106,6 @@ void matrix2CRS(device_matrix<double> &A, CRSdata &CRS) {
   CRS.row_ptr          = dev(row_ptrDev);
 }
 
-void CRSinit(matrix<double>& A)
-{
-}
-
 void CRSinit(device_matrix<double>& A)
 {
   if ( cublas_cusparse_init(gCRS) != 0 )
@@ -122,8 +120,6 @@ void CRSdataDestory(device_matrix<double>& A) {
   cusparseDestroyMatDescr(gCRS.matDescr);
 }
 
-void CRSdataDestory(matrix<double>& A) {
-}
 
 void y_Ax(double* resultPtr, CRSdata CRS, double* vectorPtr)
 {
@@ -156,4 +152,13 @@ void printDev(long N, thrust::device_vector<double> someDev)
   printv(N, some);
   delete[] some;
 }
+#endif
+
+
+void CRSinit(matrix<double>& A)
+{
+}
+void CRSdataDestory(matrix<double>& A) {
+}
+
 #endif

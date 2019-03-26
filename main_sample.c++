@@ -1,15 +1,17 @@
-#include <iostream>
+#ifndef noGPU
 #include <cuda_runtime_api.h>
 #include <cublas_v2.h>
 #include <cusparse_v2.h>
 #include <thrust/device_vector.h>
-#include "simple.h"
+using namespace thrust;
+#endif
+
+#include <iostream>
+#include <cmath>
 #include "custo.h"
 using namespace std;
-using namespace thrust;
 using namespace custo;
 #include "crs.h"
-#include "d.h"
 #include "operator.h"
 #include "ConjugateGradient.h"
 
@@ -19,8 +21,8 @@ int main()
       /********** 入力値の準備 **********/
       /**********************************/
       long i, n = 1024;
-      device_matrix<double> A(n);
-      device_vector<double> x(n), b(n);
+      matrix<double> A(n);
+      vector<double> x(n), b(n);
 
         // 中央差分行列を準備する
 	//（対角項が2でその隣が1になる、↓こんなやつ）

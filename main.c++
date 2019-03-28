@@ -14,6 +14,7 @@ using namespace sparse;
 #include "crs.h"
 #include "operator.h"
 #include "ConjugateGradient.h"
+#include "cgs.h"
 
 int main()
 {
@@ -54,7 +55,7 @@ int main()
       // 右辺ベクトルを設定 (b==0ならばbを自動生成)
       for (i = 0; i < n; i++) b[i] = 0.0;
 
-      ConjugateGradient(A,x,b);
+      CGS(A,x,b);
 
       for (i = 0; i < n; i++) cout << x[i] << endl;
       return 0;

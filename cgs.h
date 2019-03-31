@@ -1,40 +1,9 @@
-template < class Vector >
-void printv(Vector &x)
-{
-  long i, n = x.size();
-  for ( i = 0; i < n; i++ ) {
-    cout<< x[i] << endl;
-  }
-  exit(1);
-}
-
-#ifndef noGPU
-void cp(device_vector<double> &x, device_vector<double> &y){
-  int I = 1, n = x.size();
-  cublasDcopy(gCRS.cublas, n, dev(x), I, dev(y), I);
-}
-#endif
-	  
-void cp(vector<double> &x, vector<double> &y){
-  long i, n = x.size();
-  for ( i = 0; i < n; i++ ) y[i] = x[i];
-}
-
-
-#define M_solve(p) p
 template < class Matrix, class Vector>
 int CGS(Matrix &A, Vector &x, Vector &b)
 {
   CRSinit(A);
 
-  long i, n = A.size();
-  Vector x0(n);
-  for (i = 0; i < n; i++) x0[i] = i*0.1;
-
-  for (i = 0; i< n; i++)
-    if ( b[i] != 0.0 ) break;
-  if ( i >= n ) b =  A * x0;
-
+  long n = A.size();
   double resid, tol = 0.000000000001, rho_1, rho_2, alpha, beta, normb=nrm2(b);
   Vector p(n), phat(n), q(n), qhat(n), vhat(n), u(n), uhat(n), r(n), rtilde(n),
     tmp;

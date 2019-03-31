@@ -1,3 +1,14 @@
+#define M_solve(p) p
+
+template < class Vector >
+void printv(Vector &x)
+{
+  long i, n = x.size();
+  for ( i = 0; i < n; i++ ) {
+    cout<< x[i] << endl;
+  }
+}
+
 
 #ifndef noGPU
 double dot(const device_vector<double>&x, const device_vector<double>&y){
@@ -50,7 +61,12 @@ device_vector<double>& operator-(device_vector<double>&y,
   return y;
 }
 
+void cp(device_vector<double> &x, device_vector<double> &y){
+  int I = 1, n = x.size();
+  cublasDcopy(gCRS.cublas, n, dev(x), I, dev(y), I);
+}
 #endif
+
 
 vector<double>& operator+(vector<double>& y, vector<double>& x){
   int i, n = x.size();
@@ -102,3 +118,8 @@ vector<double>& operator*(double a, vector<double>&x){
   return y;
 }
 
+
+void cp(vector<double> &x, vector<double> &y){
+  long i, n = x.size();
+  for ( i = 0; i < n; i++ ) y[i] = x[i];
+}

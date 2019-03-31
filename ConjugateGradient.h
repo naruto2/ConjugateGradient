@@ -5,14 +5,8 @@ int ConjugateGradient(S& A, T& x, T& b)
 
   long i, n = A.size();
   T x0(n), z(n), p(n), q(n), r(n);
-  double alpha, beta, normr0, normr, rhop, rho, tol = 0.000000001;
+  double alpha, beta, normr0, normr, rhop, rho, tol = 0.00000000001;
   long maxit = 2*n;
-
-  for (i = 0; i < n; i++) x0[i] = i*0.1;
-  
-  for (i = 0; i< n; i++)
-    if ( b[i] != 0.0 ) break;
-  if ( i >= n ) b =  A * x0;
 
   r = A * x;
   

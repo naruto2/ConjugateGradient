@@ -134,24 +134,6 @@ void y_Ax(double* resultPtr, CRSdata CRS, double* vectorPtr)
 		 &BETA, resultPtr);
 }
 
-
-void printv(long N, double* result)
-{
-  // 結果の表示
-  for(long i = 0; i < N; i++)
-    {
-      std::cout << result[i] << std::endl;
-    }
-}
-
-
-void printDev(long N, thrust::device_vector<double> someDev)
-{
-  double* some = new double[N];
-  thrust::copy_n(someDev.begin(), N, some);
-  printv(N, some);
-  delete[] some;
-}
 #endif
 
 

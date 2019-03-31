@@ -123,3 +123,38 @@ void cp(vector<double> &x, vector<double> &y){
   long i, n = x.size();
   for ( i = 0; i < n; i++ ) y[i] = x[i];
 }
+
+
+template <class Matrix, class Vector>
+void getProb(Matrix& A, Vector& b)
+{
+  long i, n = 1024;
+  A.resize(n);
+  b.resize(n);
+        // 中央差分行列を準備する
+        //（対角項が2でその隣が1になる、↓こんなやつ）
+        // | 2 1 0 0 0 0 0 0 ・・・ 0 0 0|
+        // | 1 2 1 0 0 0 0 0 ・・・ 0 0 0|
+        // | 0 1 2 1 0 0 0 0 ・・・ 0 0 0|
+        // | 0 0 1 2 1 0 0 0 ・・・ 0 0 0|
+        // | 0 0 0 1 2 1 0 0 ・・・ 0 0 0|
+        // | 0 0 0 0 1 2 1 0 ・・・ 0 0 0|
+        // | 0 0 0 0 0 1 2 1 ・・・ 0 0 0|
+        // | 0 0 0 0 0 0 1 2 ・・・ 0 0 0|
+        // | 0 0 0 0 0 0 0 0 ・・・ 2 1 0|
+        // | 0 0 0 0 0 0 0 0 ・・・ 1 2 1|
+        // | 0 0 0 0 0 0 0 0 ・・・ 0 1 2|
+
+  for (i = 0; i < n; i++) {
+    A[i][i] = 2;
+    if(i > 0) A[i][i-1] = 1;
+    if(i < n-1) A[i][i+1] = 1;
+  }
+  CRSinit(A);
+  Vector x0(n), t;
+  for (i = 0; i < n; i++) x0[i] = i*0.1;
+  t =  A * x0;
+  cp(t,b);
+  CRSdestory(A);
+}
+

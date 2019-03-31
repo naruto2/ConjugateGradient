@@ -21,11 +21,13 @@ namespace sparse {
 
   template<typename Real> class matrix : public vector< customap<Real> > {
   public:
+    matrix()       : vector< customap<Real> >(){}
     matrix(long n) : vector< customap<Real> >(n){}
   };
 
   template<typename Real> class device_matrix : public matrix<Real> {
   public:
+    device_matrix()       : matrix<Real>(){}
     device_matrix(long n) : matrix<Real>(n){}
   };
   

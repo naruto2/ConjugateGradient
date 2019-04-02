@@ -70,7 +70,7 @@ void cp(device_vector<double> &x, device_vector<double> &y){
 }
 
 void axpy(long n, double *palpha,
-	  device_vector<double>& x, int l, device_vector<double>& y, int I) {
+	  const device_vector<double>& x, int l, device_vector<double>& y, int I) {
   cublasDaxpy(gCRS.cublas, n, palpha, dev(x), l, dev(y), I);
 }
 
@@ -134,7 +134,7 @@ void cp(vector<double> &x, vector<double> &y){
 }
 
 void axpy(long n, double *palpha,
-	  vector<double>& x, int l, vector<double>& y, int I) {
+	  const vector<double>& x, int l, vector<double>& y, int I) {
   long i;
   for ( i=0; i<n; i++) y[i] += *palpha*x[i];
 

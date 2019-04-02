@@ -1,16 +1,20 @@
 template < class Matrix, class Vector>
 int 
-BiCGSTAB(Matrix &A, Vector &x, Vector &b)
+BiCGSTAB(Matrix &A, Vector &x, const Vector &b)
 {
   CRSinit(A);
 
-  long n=A.size(), max_iter=2*n;
+  long i, n=A.size(), max_iter=2*n;
   double resid, tol=0.000000000001;
-  Vector rho_1(1), rho_2(1), alpha(1), beta(1), omega(1);
-  Vector p, phat, s, shat, t, v, r(n), rtilde(n);
-
+  double rho_1, rho_2=1.0, alpha, beta, omega=1.0;
+  Vector p, phat, s, shat, t, v, r, rtilde;
   double normb = nrm2(b);
-  r = b - A*x;
+
+  r = A*x;
+  r = -1.0*r;
+  alpha = 1.0;
+  axpy(n, &alpha, b, 1, r, 1);
+
   rtilde = r;
 
   if (normb == 0.0)
@@ -22,50 +26,56 @@ BiCGSTAB(Matrix &A, Vector &x, Vector &b)
     return 0;
   }
 
-  for (int i = 1; i <= max_iter; i++) {
-    rho_1[0] = dot(rtilde, r);
-    if (rho_1[0] == 0) {
+  for (i = 0; i <= max_iter; i++) {
+    rho_1 = dot(rtilde, r);
+    if (rho_1 == 0) {
       tol = nrm2(r) / normb;
       return 2;
     }
-    if (i == 1)
+    if (i == 0)
       p = r;
     else {
-      beta[0] = (rho_1[0]/rho_2[0]) * (alpha[0]/omega[0]);
+      beta = (rho_1/rho_2) * (alpha/omega);
 
-      p = r + beta[0] * (p - omega[0] * v);
+      omega = -omega;
+      p = r;
+      t = p;
+      axpy(n, &omega, v, 1, t, 1);
+      axpy(n, &beta,  t, 1, p, 1);
+      
     }
     phat = M_solve(p);
-    v = A * phat;
-    alpha[0] = rho_1[0] / dot(rtilde, v);
 
-    s = r - alpha[0] * v;
+    v = A * phat;
+
+    alpha = - rho_1 / dot(rtilde, v);
+    s = r;
+    axpy(n, &alpha, v, 1, s, 1);
+    alpha = -alpha;
+
     if ((resid = nrm2(s)/normb) < tol) {
-      x = x + alpha[0] * phat;
+      x = x + alpha * phat;
       tol = resid;
       return 0;
     }
     shat = M_solve(s);
     t = A * shat;
-    omega[0] = dot(t,s) / dot(t,t);
+    omega = dot(t,s) / dot(t,t);
 
+    axpy(n, &alpha, phat, 1, x, 1);
 
-    Vector x1, x2;
-    x1 = alpha[0] * phat;
-    x2 = omega[0] * shat;
-    x = x + x1;
-    x = x + x2;
-    //x = x + alpha[0] * phat + omega[0] * shat;
-
-
-    r = s - omega[0] * t;
-    rho_2[0] = rho_1[0];
+    axpy(n, &omega, shat, 1, x, 1);
+    r = s;
+    omega = -omega;
+    axpy(n, &omega, t, 1, r, 1);
+    
+    rho_2 = rho_1;
     if ((resid = nrm2(r) / normb) < tol) {
       tol = resid;
       max_iter = i;
       return 0;
     }
-    if (omega[0] == 0) {
+    if (omega == 0) {
       tol = nrm2(r) / normb;
       return 3;
     }

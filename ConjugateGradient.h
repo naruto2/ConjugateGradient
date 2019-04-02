@@ -1,5 +1,5 @@
 template<typename Matrix, typename Vector> 
-int ConjugateGradient(Matrix& A, Vector& x, Vector& b)
+int ConjugateGradient(Matrix& A, Vector& x, const Vector& b)
 {
   CRSinit(A);
 
@@ -7,8 +7,10 @@ int ConjugateGradient(Matrix& A, Vector& x, Vector& b)
   double alpha, beta, normr0, rhop, rho, tol=0.00000000001;
   Vector p(n), q(n), r(n), z(n);  
 
-  r = b - A*x;
-
+  r = A*x;
+  r = -1.0*r;
+  alpha = 1.0;
+  axpy(n, &alpha, b, 1, r, 1);
   normr0 = nrm2(r);
   
   if ( normr0 == 0.0 ) goto end;

@@ -1,5 +1,5 @@
 template < class Matrix, class Vector>
-int CGS(Matrix &A, Vector &x, Vector &b)
+int CGS(Matrix &A, Vector &x, const Vector &b)
 {
   CRSinit(A);
 
@@ -7,8 +7,10 @@ int CGS(Matrix &A, Vector &x, Vector &b)
   double alpha, beta, rho_1, rho_2, normb=nrm2(b), tol=0.000000000001;
   Vector p(n), phat(n), q(n), qhat(n), r(n), rtilde(n), u(n), uhat(n), vhat(n);
 
-  r = b - A*x;
-
+  r = A*x;
+  r = -1.0*r;
+  alpha = 1.0;
+  axpy(n, &alpha, b, 1, r, 1);
   rtilde = r;
   
   if (normb == 0.0)  normb = 1;

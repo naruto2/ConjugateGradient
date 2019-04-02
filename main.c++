@@ -31,7 +31,7 @@ int main()
   x.resize(n);
   for (i = 0; i < n; i++) x[i] = 1.0;
   
-  BiCGSTAB(A,x,b);
+  ConjugateGradient(A,x,b);
 
   printv(x);
   return 0;

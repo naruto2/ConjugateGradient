@@ -1,7 +1,9 @@
-a.out: main.c++ ConjugateGradient.h cgs.h crs.h sparse.h operator.h
-	c++ -DnoGPU main.c++ 
+SRCS = main.c++ sparse.h crs.h operator.h ConjugateGradient.h cgs.h
 
-gpu: cgs.h
+a.out: $(SRCS)
+	c++ -Wall -DnoGPU main.c++ 
+
+gpu: $(SRCS)
 	ln -sf main.c++ main.cu
 	nvcc main.cu -lcusparse -lcublas -o gpu
 

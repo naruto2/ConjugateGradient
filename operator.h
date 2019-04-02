@@ -1,3 +1,6 @@
+#ifndef OPERATOR_H
+#define OPERATOR_H
+
 #define M_solve(p) p
 
 template < class Vector >
@@ -65,6 +68,12 @@ void cp(device_vector<double> &x, device_vector<double> &y){
   int I = 1, n = x.size();
   cublasDcopy(gCRS.cublas, n, dev(x), I, dev(y), I);
 }
+
+void axpy(long n, double *palpha,
+	  device_vector<double>& x, int l, device_vector<double>& y, int I) {
+  cublasDaxpy(gCRS.cublas, n, palpha, dev(x), l, dev(y), I);
+}
+
 #endif
 
 
@@ -124,6 +133,12 @@ void cp(vector<double> &x, vector<double> &y){
   for ( i = 0; i < n; i++ ) y[i] = x[i];
 }
 
+void axpy(long n, double *palpha,
+	  vector<double>& x, int l, vector<double>& y, int I) {
+  long i;
+  for ( i=0; i<n; i++) y[i] += *palpha*x[i];
+
+}
 
 template <class Matrix, class Vector>
 void getProb(Matrix& A, Vector& b)
@@ -158,3 +173,4 @@ void getProb(Matrix& A, Vector& b)
   CRSdestory(A);
 }
 
+#endif

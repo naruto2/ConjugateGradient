@@ -5,7 +5,7 @@ int CGS(Matrix &A, Vector &x, const Vector &b)
 
   long i, n=A.size(), maxit=2*n, ret=0;
   double alpha, beta, rho_1, rho_2, normb=nrm2(b), tol=0.000000000001;
-  Vector p(n), phat(n), q(n), qhat(n), r(n), rtilde(n), u(n), uhat(n), vhat(n);
+  Vector p, phat, q, qhat, r, rtilde, u, uhat, vhat;
 
   r = A*x;
   r = -1.0*r;

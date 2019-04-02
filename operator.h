@@ -141,11 +141,10 @@ void axpy(long n, double *palpha,
 }
 
 template <class Matrix, class Vector>
-void getProb(Matrix& A, Vector& b)
+void getProb(Matrix& A, Vector& x, Vector& b)
 {
   long i, n = 1024;
-  A.resize(n);
-  b.resize(n);
+  A.resize(n); x.resize(n); b.resize(n);
         // 中央差分行列を準備する
         //（対角項が2でその隣が1になる、↓こんなやつ）
         // | 2 1 0 0 0 0 0 0 ・・・ 0 0 0|

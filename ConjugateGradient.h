@@ -5,7 +5,7 @@ int ConjugateGradient(Matrix& A, Vector& x, const Vector& b)
 
   long i, n=A.size(), maxit=2*n, ret=0;
   double alpha, beta, normr0, rhop, rho, tol=0.00000000001;
-  Vector p(n), q(n), r(n), z(n);  
+  Vector p, q, r, z;  
 
   r = A*x;
   r = -1.0*r;

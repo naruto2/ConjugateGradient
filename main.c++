@@ -15,6 +15,7 @@ using namespace sparse;
 #include "operator.h"
 #include "ConjugateGradient.h"
 #include "cgs.h"
+#include "bicgstab.h"
 
 int main()
 {
@@ -30,7 +31,7 @@ int main()
   x.resize(n);
   for (i = 0; i < n; i++) x[i] = 1.0;
   
-  CGS(A,x,b);
+  BiCGSTAB(A,x,b);
 
   printv(x);
   return 0;

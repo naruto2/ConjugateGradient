@@ -3,7 +3,7 @@ int ConjugateGradient(Matrix& A, Vector& x, const Vector& b)
 {
   CRSinit(A);
 
-  long i, n=A.size(), maxit=2*n, ret=SOLVERROR_NONE;
+  long i, n=A.size(), maxit=10*n, ret=SOLVERROR_NONE;
   double alpha, beta, normr0, rhop, rho, tol=0.00000000001;
   Vector p, q, r, z;  
 

@@ -15,7 +15,10 @@ int CGS(Matrix &A, Vector &x, const Vector &b)
   if ( nrm2(r) / normb <= tol)  goto end;
 
   for (i = 0; i <= maxit; i++) {
-
+    if ( i % 100 == 0 ) if(progress("CGS",i,nrm2(r)/normb)!=0) {
+	ret = 1;
+	goto end;
+      }
     rho_1 = dot(rtilde, r);
 
     if (rho_1 == 0) {

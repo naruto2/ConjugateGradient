@@ -5,7 +5,7 @@ BiCG(Matrix &A, Vector &x, const Vector &b)
   CRSinit(A);
 
   long   i, n=A.size(), max_iter=10*n;
-  double resid, tol=0.0000000001;
+  double resid, tol=0.0000000000001;
   Vector rho_1(1), rho_2(1), alpha(1), beta(1);
   Vector z, ztilde, p, ptilde, q, qtilde;
 
@@ -23,7 +23,10 @@ BiCG(Matrix &A, Vector &x, const Vector &b)
   }
 
   for (i = 0; i < max_iter; i++) {
-
+    if ( i % 100 == 0 ) if(progress("BiCG",i,nrm2(r)/normb)!=0) {
+	CRSdestory(A);
+	return 1;
+      }
     z = M_solve(r);
     ztilde = M_trans_solve(rtilde);
     rho_1[0] = dot(z, rtilde);

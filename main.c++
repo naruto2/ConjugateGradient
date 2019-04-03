@@ -7,8 +7,9 @@ int main()
 #else
   matrix<double> A; vector<double> x, b;
 #endif      
-  getProb(A,x,b);
+  //getProb(A,x,b);
+  PSC98init(A,x,b);
   solver(A,x,b);
-  //printv(x);
+  PSC98check(x);
   return 0;
 }

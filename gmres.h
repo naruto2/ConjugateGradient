@@ -60,7 +60,7 @@ GMRES(Matrix &A, Vector &x, const Vector &b)
 {
   CRSinit(A);
   
-  long i, j = 1, k, jj, m = 32, n=A.size(), maxit=10*n,
+  long i, j = 1, k, jj, m = 100, n=A.size(), maxit=10*n,
     ret = SOLVERROR_NONE;
   double beta, tol=0.0000000000001, normb = nrm2(M_solve(b));
   Vector s(m+1), cs(m+1), sn(m+1), r, w, *v = new Vector[m+1];;

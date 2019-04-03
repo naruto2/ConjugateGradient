@@ -7,9 +7,7 @@ int CGS(Matrix &A, Vector &x, const Vector &b)
   double alpha, beta, rho_1, rho_2, normb=nrm2(b), tol=0.000000000001;
   Vector p, phat, q, qhat, r, rtilde, u, uhat, vhat;
 
-  r = A*x;
-  r = -1.0*r;
-  y_ax(r, 1.0, b);
+  r = y_ax(-1.0*(A*x), 1.0, b);
   rtilde = r;
   
   if (normb == 0.0)  normb = 1;

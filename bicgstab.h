@@ -4,14 +4,12 @@ BiCGSTAB(Matrix &A, Vector &x, const Vector &b)
 {
   CRSinit(A);
 
-  long i, n=A.size(), maxit=2*n, ret=0;
-  double alpha, beta, omega=1.0, rho_1, rho_2=1.0, tol=0.0000000001,
+  long i, n=A.size(), maxit=10*n, ret=0;
+  double alpha, beta, omega=1.0, rho_1, rho_2=1.0, tol=0.000000000001,
     normb = nrm2(b);
   Vector p, phat, s, shat, t, v, r, rtilde;
   
-  r = A*x;
-  r = -1.0*r;
-  y_ax(r,1.0,b);
+  r = y_ax(-1.0*(A*x),1.0,b);
   
   rtilde = r;
 
@@ -36,7 +34,7 @@ BiCGSTAB(Matrix &A, Vector &x, const Vector &b)
     }
     phat = M_solve(p);
 
-    v = A * phat;
+    v = A*phat;
 
     alpha =  rho_1 / dot(rtilde, v);
     s = r;
@@ -47,7 +45,7 @@ BiCGSTAB(Matrix &A, Vector &x, const Vector &b)
       goto end;
     }
     shat = M_solve(s);
-    t = A * shat;
+    t = A*shat;
     omega = dot(t,s) / dot(t,t);
 
     y_ax(x,alpha,phat);

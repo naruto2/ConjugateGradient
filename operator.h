@@ -137,8 +137,15 @@ void axpy(long n, double *palpha,
 	  const vector<double>& x, int l, vector<double>& y, int I) {
   long i;
   for ( i=0; i<n; i++) y[i] += *palpha*x[i];
-
 }
+
+
+template <class Vector>
+Vector& y_ax(Vector& y, double alpha, const Vector& x) {
+  axpy(x.size(), &alpha, x, 1, y, 1);
+  return y;
+}
+
 
 template <class Matrix, class Vector>
 void getProb(Matrix& A, Vector& x, Vector& b)

@@ -4,84 +4,69 @@ BiCGSTAB(Matrix &A, Vector &x, const Vector &b)
 {
   CRSinit(A);
 
-  long i, n=A.size(), max_iter=2*n;
-  double resid, tol=0.000000000001;
-  double rho_1, rho_2=1.0, alpha, beta, omega=1.0;
+  long i, n=A.size(), maxit=2*n, ret=0;
+  double alpha, beta, omega=1.0, rho_1, rho_2=1.0, tol=0.0000000001,
+    normb = nrm2(b);
   Vector p, phat, s, shat, t, v, r, rtilde;
-  double normb = nrm2(b);
-
+  
   r = A*x;
   r = -1.0*r;
-  alpha = 1.0;
-  axpy(n, &alpha, b, 1, r, 1);
-
+  y_ax(r,1.0,b);
+  
   rtilde = r;
 
-  if (normb == 0.0)
-    normb = 1;
+  if (normb == 0.0) normb = 1;
   
-  if ((resid = nrm2(r) / normb) <= tol) {
-    tol = resid;
-    max_iter = 0;
-    return 0;
-  }
+  if (nrm2(r) / normb <= tol)  goto end;
 
-  for (i = 0; i <= max_iter; i++) {
+  for (i = 0; i <= maxit; i++) {
     rho_1 = dot(rtilde, r);
     if (rho_1 == 0) {
-      tol = nrm2(r) / normb;
-      return 2;
+      ret = 1;
+      goto end;
     }
     if (i == 0)
       p = r;
     else {
       beta = (rho_1/rho_2) * (alpha/omega);
-
-      omega = -omega;
       p = r;
       t = p;
-      axpy(n, &omega, v, 1, t, 1);
-      axpy(n, &beta,  t, 1, p, 1);
-      
+      y_ax(t,-omega,v);
+      y_ax(p, beta, t);
     }
     phat = M_solve(p);
 
     v = A * phat;
 
-    alpha = - rho_1 / dot(rtilde, v);
+    alpha =  rho_1 / dot(rtilde, v);
     s = r;
-    axpy(n, &alpha, v, 1, s, 1);
-    alpha = -alpha;
+    y_ax(s, -alpha, v);
 
-    if ((resid = nrm2(s)/normb) < tol) {
-      x = x + alpha * phat;
-      tol = resid;
-      return 0;
+    if (nrm2(s)/normb < tol) {
+      y_ax(x, alpha, phat);
+      goto end;
     }
     shat = M_solve(s);
     t = A * shat;
     omega = dot(t,s) / dot(t,t);
 
-    axpy(n, &alpha, phat, 1, x, 1);
-
-    axpy(n, &omega, shat, 1, x, 1);
+    y_ax(x,alpha,phat);
+    y_ax(x,omega,shat);
+    
     r = s;
-    omega = -omega;
-    axpy(n, &omega, t, 1, r, 1);
+    y_ax(r, -omega, t);
     
     rho_2 = rho_1;
-    if ((resid = nrm2(r) / normb) < tol) {
-      tol = resid;
-      max_iter = i;
-      return 0;
-    }
+
+    if (nrm2(r) / normb < tol)  goto end;
+
     if (omega == 0) {
-      tol = nrm2(r) / normb;
-      return 3;
+      ret = 2;
+      goto end;
     }
   }
-
-  tol = resid;
+  ret = 3;
+ end:
   CRSdestory(A);
-  return 1;
+  return ret;
 }

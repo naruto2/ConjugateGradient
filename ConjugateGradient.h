@@ -9,8 +9,7 @@ int ConjugateGradient(Matrix& A, Vector& x, const Vector& b)
 
   r = A*x;
   r = -1.0*r;
-  alpha = 1.0;
-  axpy(n, &alpha, b, 1, r, 1);
+  y_ax(r, 1.0, b);
   normr0 = nrm2(r);
   
   if ( normr0 == 0.0 ) goto end;
@@ -23,14 +22,12 @@ int ConjugateGradient(Matrix& A, Vector& x, const Vector& b)
     
     rho = dot(r, z);
     
-    
     if ( i == 0 ){
       p = z;
     } else {
       beta = rho/rhop;
 
-      axpy(n, &beta, p, 1, z, 1);
-
+      y_ax(z, beta, p);
       p = z;
     }
 
@@ -38,16 +35,12 @@ int ConjugateGradient(Matrix& A, Vector& x, const Vector& b)
 
     alpha = rho/dot(p,q);
 
-    axpy(n, &alpha, p, 1, x, 1);
-
-    alpha = -alpha;
-
-    axpy(n, &alpha, q, 1, r, 1);
+    y_ax(x,  alpha, p);
+    y_ax(r, -alpha, q);
     
     if ( nrm2(r)/normr0 < tol ) goto end;
   }
   ret=1;
-
  end:
   CRSdestory(A);
   return ret;

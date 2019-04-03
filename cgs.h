@@ -9,22 +9,20 @@ int CGS(Matrix &A, Vector &x, const Vector &b)
 
   r = A*x;
   r = -1.0*r;
-  alpha = 1.0;
-  axpy(n, &alpha, b, 1, r, 1);
+  y_ax(r, 1.0, b);
   rtilde = r;
   
   if (normb == 0.0)  normb = 1;
   
-  if ( nrm2(r) / normb <= tol) {
-    ret = 1; goto end;
-  }
+  if ( nrm2(r) / normb <= tol)  goto end;
+
   for (i = 0; i <= maxit; i++) {
 
     rho_1 = dot(rtilde, r);
 
     if (rho_1 == 0) {
       tol = nrm2(r) / normb;
-      ret = 2; goto end;
+      ret = 1; goto end;
     }
     
     if (i == 0) {
@@ -33,10 +31,10 @@ int CGS(Matrix &A, Vector &x, const Vector &b)
     } else {
       beta = rho_1 / rho_2;
       u = r; 
-      axpy(n, &beta, q, 1, u, 1);
-      axpy(n, &beta, p, 1, q, 1);
+      y_ax(u, beta, q);
+      y_ax(q, beta, p);
       p = u;
-      axpy(n, &beta, q, 1, p, 1);
+      y_ax(p, beta, q);
     }
     phat = M_solve(p);
     
@@ -46,31 +44,23 @@ int CGS(Matrix &A, Vector &x, const Vector &b)
 
     uhat = u;
 
-    alpha = -alpha;
-
-    axpy(n, &alpha, vhat, 1, u, 1);
-
-    alpha = -alpha;
-
+    y_ax(u, -alpha, vhat);
+    
     q = u;
     
     uhat = M_solve(uhat + q);
 
-    axpy(n, &alpha, uhat, 1, x, 1);
+    y_ax(x, alpha, uhat);
     
     qhat = A*uhat;
 
-    alpha = -alpha;
-
-    axpy(n, &alpha, qhat, 1, r, 1);
-
+    y_ax(r, -alpha, qhat);
+    
     rho_2 = rho_1;
 
-    if ( nrm2(r) / normb < tol) {
-      goto end;
-    }
+    if ( nrm2(r) / normb < tol) goto end;
   }
-  ret = 3;
+  ret = 2;
  end:
   CRSdestory(A);
   return ret;

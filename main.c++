@@ -8,7 +8,7 @@ int main()
   matrix<double> A; vector<double> x, b;
 #endif      
   getProb(A,x,b);
-  ConjugateGradient(A,x,b);
+  BiCG(A,x,b);
   printv(x);
   return 0;
 }

@@ -24,5 +24,6 @@ using namespace sparse;
 #include "cgs.h"
 #include "bicgstab.h"
 #include "gmres.h"
+#include "bicg.h"
 
 #endif

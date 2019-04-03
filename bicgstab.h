@@ -4,7 +4,7 @@ BiCGSTAB(Matrix &A, Vector &x, const Vector &b)
 {
   CRSinit(A);
 
-  long i, n=A.size(), maxit=10*n, ret=0;
+  long i, n=A.size(), maxit=10*n, ret=SOLVERROR_NONE;
   double alpha, beta, omega=1.0, rho_1, rho_2=1.0, tol=0.000000000001,
     normb = nrm2(b);
   Vector p, phat, s, shat, t, v, r, rtilde;
@@ -20,7 +20,7 @@ BiCGSTAB(Matrix &A, Vector &x, const Vector &b)
   for (i = 0; i <= maxit; i++) {
     rho_1 = dot(rtilde, r);
     if (rho_1 == 0) {
-      ret = 1;
+      ret = SOLVERROR_BREAKDOWN;
       goto end;
     }
     if (i == 0)
@@ -59,11 +59,11 @@ BiCGSTAB(Matrix &A, Vector &x, const Vector &b)
     if (nrm2(r) / normb < tol)  goto end;
 
     if (omega == 0) {
-      ret = 2;
+      ret = SOLVERROR_BREAKDOWN;
       goto end;
     }
   }
-  ret = 3;
+  ret = SOLVERROR_MAXIT;
  end:
   CRSdestory(A);
   return ret;

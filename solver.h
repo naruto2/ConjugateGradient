@@ -9,6 +9,10 @@
 using namespace thrust;
 #endif
 
+#define SOLVERROR_NONE      0
+#define SOLVERROR_MAXIT     1
+#define SOLVERROR_BREAKDOWN 2
+
 #include <iostream>
 #include <cmath>
 #include "sparse.h"

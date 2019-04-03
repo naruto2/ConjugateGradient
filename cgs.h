@@ -3,7 +3,7 @@ int CGS(Matrix &A, Vector &x, const Vector &b)
 {
   CRSinit(A);
 
-  long i, n=A.size(), maxit=2*n, ret=0;
+  long i, n=A.size(), maxit=2*n, ret=SOLVERROR_NONE;
   double alpha, beta, rho_1, rho_2, normb=nrm2(b), tol=0.000000000001;
   Vector p, phat, q, qhat, r, rtilde, u, uhat, vhat;
 
@@ -19,8 +19,7 @@ int CGS(Matrix &A, Vector &x, const Vector &b)
     rho_1 = dot(rtilde, r);
 
     if (rho_1 == 0) {
-      tol = nrm2(r) / normb;
-      ret = 1; goto end;
+      ret = SOLVERROR_BREAKDOWN; goto end;
     }
     
     if (i == 0) {
@@ -58,7 +57,7 @@ int CGS(Matrix &A, Vector &x, const Vector &b)
 
     if ( nrm2(r) / normb < tol) goto end;
   }
-  ret = 2;
+  ret = SOLVERROR_MAXIT;
  end:
   CRSdestory(A);
   return ret;

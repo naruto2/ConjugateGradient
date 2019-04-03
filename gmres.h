@@ -60,7 +60,8 @@ GMRES(Matrix &A, Vector &x, const Vector &b)
 {
   CRSinit(A);
   
-  long i, j = 1, k, jj, m = 32, n=A.size(), maxit=10*n, ret = 0;
+  long i, j = 1, k, jj, m = 32, n=A.size(), maxit=10*n,
+    ret = SOLVERROR_NONE;
   double beta, tol=0.00000000001, normb = nrm2(M_solve(b));
   Vector s(m+1), cs(m+1), sn(m+1), r, w, *v = new Vector[m+1];;
   Matrix H(n);
@@ -114,7 +115,7 @@ GMRES(Matrix &A, Vector &x, const Vector &b)
     beta = nrm2(r);
     if ( beta/normb < tol) goto end;
   }
-  ret = 1;
+  ret = SOLVERROR_MAXIT;
  end:
   delete [] v;
   CRSdestory(A);

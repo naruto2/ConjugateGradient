@@ -45,7 +45,10 @@ template < class Matrix, class Vector>
   theta[0] = 0.0;
 
   for (int i = 1; i <= max_iter; i++) {
-
+    if ( i % 100 == 0 ) if(progress("QMR",i,nrm2(r)/normb)!=0) {
+	CRSdestory(A);
+	return 1;
+      }
     if (rho[0] == 0.0)
       return 2;                        // return on breakdown
 

@@ -62,10 +62,10 @@ GMRES(Matrix &A, Vector &x, const Vector &b)
   
   long i, j = 1, k, jj, m = 32, n=A.size(), maxit=10*n,
     ret = SOLVERROR_NONE;
-  double beta, tol=0.00000000001, normb = nrm2(M_solve(b));
+  double beta, tol=0.0000000000001, normb = nrm2(M_solve(b));
   Vector s(m+1), cs(m+1), sn(m+1), r, w, *v = new Vector[m+1];;
   Matrix H(n);
-
+  
   r = M_solve(y_ax(-1.0*(A*x), 1.0, b));
   beta = nrm2(r);
   
@@ -74,6 +74,10 @@ GMRES(Matrix &A, Vector &x, const Vector &b)
   if (nrm2(r)/normb < tol) goto end;
 
   while (j <  maxit) {
+    if ( j % 1 == 0 ) if(progress("GMRES",j,nrm2(r)/normb)!=0) {
+	ret = 1;
+	goto end;
+      }
     v[0] = r;
     v[0] = (1.0/beta)*v[0];    
 

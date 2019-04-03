@@ -1,4 +1,4 @@
-SRCS = main.c++ sparse.h crs.h operator.h \
+SRCS = main.c++ sparse.h crs.h operator.h solver.h \
 	ConjugateGradient.h cgs.h bicgstab.h gmres.h bicg.h qmr.h
 
 a.out: $(SRCS)

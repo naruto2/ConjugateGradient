@@ -8,7 +8,7 @@ int main()
   matrix<double> A; vector<double> x, b;
 #endif      
   getProb(A,x,b);
-  QMR(A,x,b);
-  printv(x);
+  solver(A,x,b);
+  //printv(x);
   return 0;
 }

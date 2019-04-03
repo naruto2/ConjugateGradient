@@ -48,7 +48,7 @@ void GeneratePlaneRotation(Real &dx, Real &dy, Real &cs, Real &sn)
 }
 
 
-template<class Real> 
+template<class Real>
 void ApplyPlaneRotation(Real &dx, Real &dy, Real &cs, Real &sn)
 {
   Real temp  =  cs * dx + sn * dy;
@@ -61,6 +61,7 @@ template < class Matrix, class Vector>
 int 
 GMRES(Matrix &A, Vector &x, const Vector &b)
 {
+  CRSinit(A);
   
   long m = 8, n=A.size(), max_iter=2*n;
   double resid, tol=0.0000000001;
@@ -101,14 +102,22 @@ GMRES(Matrix &A, Vector &x, const Vector &b)
       H(i+1, i) = nrm2(w);
       v[i+1] = (1.0 / H(i+1, i)) * w;
 
-      for (k = 0; k < i; k++)
-        ApplyPlaneRotation(H(k,i), H(k+1,i), cs[k], sn[k]);
+      for (k = 0; k < i; k++){
+	double csk = cs[k], snk = sn[k];
+        ApplyPlaneRotation(H(k,i), H(k+1,i), csk, snk);
+	cs[k] = csk, sn[k] = snk;
+      }
       
-      GeneratePlaneRotation(H(i,i), H(i+1,i), cs[i], sn[i]);
-      ApplyPlaneRotation(H(i,i), H(i+1,i), cs[i], sn[i]);
-      ApplyPlaneRotation(s[i], s[i+1], cs[i], sn[i]);
+      {
+	double csi = cs[i], sni = sn[i], si=s[i], si1=s[i+1];
+	GeneratePlaneRotation(H(i,i), H(i+1,i), csi, sni);
+	ApplyPlaneRotation(H(i,i), H(i+1,i), csi, sni);
+	ApplyPlaneRotation(si, si1, csi, sni);
+	cs[i] = csi, sn[i] = sni, s[i] = si, s[i+1] = si1;
+      }
       
-      if ((resid = abs(s[i+1]) / normb) < tol) {
+      double si1 = s[i+1];
+      if ((resid = abs(si1) / normb) < tol) {
         Update(x, i, H, s, v);
         tol = resid;
         max_iter = j;
@@ -135,6 +144,6 @@ GMRES(Matrix &A, Vector &x, const Vector &b)
   
   tol = resid;
   delete [] v;
+  CRSdestory(A);
   return 1;
 }
-

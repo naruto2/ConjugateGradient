@@ -19,5 +19,6 @@ using namespace sparse;
 #include "ConjugateGradient.h"
 #include "cgs.h"
 #include "bicgstab.h"
+#include "gmres.h"
 
 #endif

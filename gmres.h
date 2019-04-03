@@ -88,7 +88,8 @@ GMRES(Matrix &A, Vector &x, const Vector &b)
   Vector *v = new Vector[m+1];
 
   while (j <= max_iter) {
-    v[0] =  (1.0 / beta)*r;    
+    v[0] = r;
+    v[0] =  (1.0 / beta)*v[0];    
     for (jj=0; jj<(long)s.size(); jj++) s[jj] = 0.0;
     s[0] = beta;
     
@@ -97,7 +98,8 @@ GMRES(Matrix &A, Vector &x, const Vector &b)
       w = M_solve(A * v[i]);
       for (k = 0; k <= i; k++) {
         H(k, i) = dot(w, v[k]);
-        w = w -  H(k, i) * v[k];
+	Vector t = v[k];
+        w = w -  H(k, i) * t;
       }
       H(i+1, i) = nrm2(w);
       v[i+1] = (1.0 / H(i+1, i)) * w;

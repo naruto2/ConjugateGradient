@@ -1,6 +1,3 @@
-#define trans_mult(A,x) A*x
-#define M_trans_solve(x) x
-
 template < class Matrix, class Vector>
 int 
 BiCG(Matrix &A, Vector &x, const Vector &b)

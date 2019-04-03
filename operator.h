@@ -2,6 +2,9 @@
 #define OPERATOR_H
 
 #define M_solve(p) p
+#define trans_mult(A,x) A*x
+#define M_trans_solve(x) x
+
 
 template < class Vector >
 void printv(Vector &x)

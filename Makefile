@@ -1,5 +1,5 @@
 SRCS = main.c++ sparse.h crs.h operator.h \
-	ConjugateGradient.h cgs.h bicgstab.h gmres.h bicg.h
+	ConjugateGradient.h cgs.h bicgstab.h gmres.h bicg.h qmr.h
 
 a.out: $(SRCS)
 	c++ -Wall -DnoGPU main.c++ 

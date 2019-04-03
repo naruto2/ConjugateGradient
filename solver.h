@@ -25,5 +25,6 @@ using namespace sparse;
 #include "bicgstab.h"
 #include "gmres.h"
 #include "bicg.h"
+#include "qmr.h"
 
 #endif

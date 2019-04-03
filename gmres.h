@@ -1,6 +1,3 @@
-#define H(i,j) H[i][j]
-#define h(i,j) h[i][j]
-
 template < class Matrix, class Vector >
 void 
 Update(Vector &x, int k, Matrix &h, Vector &s, Vector v[])
@@ -9,9 +6,9 @@ Update(Vector &x, int k, Matrix &h, Vector &s, Vector v[])
 
   // Backsolve:  
   for (int i = k; i >= 0; i--) {
-    y[i] /= h(i,i);
+    y[i] /= h[i][i];
     for (int j = i - 1; j >= 0; j--)
-      y[j] -= h(j,i) * y[i];
+      y[j] -= h[j][i] * y[i];
   }
 
   for (int j = 0; j <= k; j++)
@@ -63,89 +60,63 @@ GMRES(Matrix &A, Vector &x, const Vector &b)
 {
   CRSinit(A);
   
-  long m = 8, n=A.size(), max_iter=2*n;
-  double resid, tol=0.0000000001;
-  long i, j = 1, k, jj;
-  Vector s(m+1), cs(m+1), sn(m+1), w;
-  Matrix Hmatrix(n), H = Hmatrix;
-  double normb = nrm2(M_solve(b));
+  long i, j = 1, k, jj, m = 32, n=A.size(), maxit=10*n, ret = 0;
+  double beta, tol=0.00000000001, normb = nrm2(M_solve(b));
+  Vector s(m+1), cs(m+1), sn(m+1), r, w, *v = new Vector[m+1];;
+  Matrix H(n);
 
-  Vector r = A*x;
-  r = -1.0*r;
-  y_ax(r, 1.0, b);
-  r = M_solve(r);
-  double beta = nrm2(r);
+  r = M_solve(y_ax(-1.0*(A*x), 1.0, b));
+  beta = nrm2(r);
   
-  if (normb == 0.0)
-    normb = 1;
+  if (normb == 0.0) normb = 1;
   
-  if ((resid = nrm2(r) / normb) <= tol) {
-    tol = resid;
-    max_iter = 0;
-    return 0;
-  }
+  if (nrm2(r)/normb < tol) goto end;
 
-  Vector *v = new Vector[m+1];
-
-  while (j <= max_iter) {
+  while (j <  maxit) {
     v[0] = r;
-    v[0] =  (1.0 / beta)*v[0];    
+    v[0] = (1.0/beta)*v[0];    
+
     for (jj=0; jj<(long)s.size(); jj++) s[jj] = 0.0;
     s[0] = beta;
     
-    for (i = 0; i < m && j <= max_iter; i++, j++) {
-
+    for (i = 0; i < m && j <= maxit; i++, j++) {
+      
       w = M_solve(A * v[i]);
       for (k = 0; k <= i; k++) {
-        H(k, i) = dot(w, v[k]);
-	Vector t = v[k];
-        w = w -  H(k, i) * t;
+        H[k][i] = dot(w, v[k]);
+	y_ax(w, -H[k][i], v[k]);
       }
-      H(i+1, i) = nrm2(w);
-      v[i+1] = (1.0 / H(i+1, i)) * w;
+      H[i+1][i] = nrm2(w);
+      v[i+1] = (1.0/H[i+1][i])*w;
 
       for (k = 0; k < i; k++){
 	double csk = cs[k], snk = sn[k];
-        ApplyPlaneRotation(H(k,i), H(k+1,i), csk, snk);
+        ApplyPlaneRotation(H[k][i], H[k+1][i], csk, snk);
 	cs[k] = csk, sn[k] = snk;
       }
       
-      {
-	double csi = cs[i], sni = sn[i], si=s[i], si1=s[i+1];
-	GeneratePlaneRotation(H(i,i), H(i+1,i), csi, sni);
-	ApplyPlaneRotation(H(i,i), H(i+1,i), csi, sni);
-	ApplyPlaneRotation(si, si1, csi, sni);
-	cs[i] = csi, sn[i] = sni, s[i] = si, s[i+1] = si1;
-      }
+      double csi = cs[i], sni = sn[i], si=s[i], si1=s[i+1];
+      GeneratePlaneRotation(H[i][i], H[i+1][i], csi, sni);
+      ApplyPlaneRotation(H[i][i], H[i+1][i], csi, sni);
+      ApplyPlaneRotation(si, si1, csi, sni);
+      cs[i] = csi, sn[i] = sni, s[i] = si, s[i+1] = si1;
       
-      double si1 = s[i+1];
-      if ((resid = abs(si1) / normb) < tol) {
+      si1 = s[i+1];
+      if ( abs(si1)/normb < tol) {
         Update(x, i, H, s, v);
-        tol = resid;
-        max_iter = j;
-        delete [] v;
-        return 0;
+	goto end;
       }
     }
-    Update(x, m - 1, H, s, v);
+    Update(x, m-1, H, s, v);
 
-
-    r = A*x;
-    r = -1.0*r;
-    y_ax(r, 1.0, b);
-    r = M_solve(r);
+    r = M_solve(y_ax(-1.0*(A*x), 1.0, b));
 
     beta = nrm2(r);
-    if ((resid = beta / normb) < tol) {
-      tol = resid;
-      max_iter = j;
-      delete [] v;
-      return 0;
-    }
+    if ( beta/normb < tol) goto end;
   }
-  
-  tol = resid;
+  ret = 1;
+ end:
   delete [] v;
   CRSdestory(A);
-  return 1;
+  return ret;
 }

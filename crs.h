@@ -114,7 +114,7 @@ void CRSinit(device_matrix<double>& A)
 }
 
 
-void CRSdestory(device_matrix<double>& A) {
+void CRSdestory(const device_matrix<double>& A) {
   cublasDestroy(gCRS.cublas);
   cusparseDestroy(gCRS.cusparse);
   cusparseDestroyMatDescr(gCRS.matDescr);
@@ -137,10 +137,10 @@ void y_Ax(double* resultPtr, CRSdata CRS, double* vectorPtr)
 #endif
 
 
-void CRSinit(matrix<double>& A)
+void CRSinit(const matrix<double>& A)
 {
 }
-void CRSdestory(matrix<double>& A) {
+void CRSdestory(const matrix<double>& A) {
 }
 
 #endif

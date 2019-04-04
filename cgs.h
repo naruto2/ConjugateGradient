@@ -3,7 +3,7 @@ int CGS(Matrix &A, Vector &x, const Vector &b)
 {
   CRSinit(A);
 
-  long i, n=A.size(), maxit=2*n, ret=SOLVERROR_NONE;
+  long i, maxit=20000, ret=SOLVERROR_NONE;
   double alpha, beta, rho_1, rho_2, normb=nrm2(b), tol=0.000000000001;
   Vector p, phat, q, qhat, r, rtilde, u, uhat, vhat;
 

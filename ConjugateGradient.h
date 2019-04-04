@@ -3,18 +3,21 @@ int ConjugateGradient(Matrix& A, Vector& x, const Vector& b)
 {
   CRSinit(A);
 
-  long i, n=A.size(), maxit=10*n, ret=SOLVERROR_NONE;
-  double alpha, beta, normr0, rhop, rho, tol=0.00000000001;
+  long i, maxit=100000, ret=SOLVERROR_NONE;
+  double alpha, beta, normb, rhop, rho, tol=0.00000000001;
   Vector p, q, r, z;  
 
   r = A*x;
   r = -1.0*r;
   y_ax(r, 1.0, b);
-  normr0 = nrm2(r);
+  normb = nrm2(b);
   
-  if ( normr0 == 0.0 ) goto end;
+  if ( normb == 0.0 ) goto end;
   
   for (i = 0; i < maxit; i++){
+    if ( i % 100 == 0 ) if(progress("ConjugateGradient",i,nrm2(r)/normb)!=0) {
+	goto end;
+      }
     
     z = M_solve(r);
     
@@ -38,7 +41,7 @@ int ConjugateGradient(Matrix& A, Vector& x, const Vector& b)
     y_ax(x,  alpha, p);
     y_ax(r, -alpha, q);
     
-    if ( nrm2(r)/normr0 < tol ) goto end;
+    if ( nrm2(r)/normb < tol ) goto end;
   }
   ret=SOLVERROR_MAXIT;
  end:

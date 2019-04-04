@@ -28,6 +28,12 @@ int progress(string str, long i, double res);
 #include "qmr.h"
 #include "psc98.h"
 
+template < class Matrix >
+int
+symmetric(Matrix& A)
+{
+  return 1;
+}
 
 template < class Matrix, class Vector >
 double
@@ -48,7 +54,15 @@ solver(Matrix& A, Vector& x, const Vector&b)
   CRSinit(A);
   if (resi(A,x,b)>resi(A,y,b)) x=y; else y=x;
   CRSdestory(A);
-  
+
+  if(symmetric(A)) {
+    ret = ConjugateGradient(A,x,b);
+    if ( ret == 0 ) return 0;
+    CRSinit(A);
+    if (resi(A,x,b)>resi(A,y,b)) x=y; else y=x;
+    CRSdestory(A);
+  }
+
   ret = BiCG(A,x,b); 
   if ( ret == 0 ) return 0;
   CRSinit(A);
@@ -66,8 +80,8 @@ solver(Matrix& A, Vector& x, const Vector&b)
   CRSinit(A);
   if (resi(A,x,b)>resi(A,y,b)) x=y; else y=x;
   CRSdestory(A);
-  
-  ret = ConjugateGradient(A,x,b);
+
+  ret = GMRES(A,x,b); 
   if ( ret == 0 ) return 0;
   CRSinit(A);
   if (resi(A,x,b)>resi(A,y,b)) x=y; else y=x;
@@ -80,20 +94,14 @@ int progress(string str, long i, double res)
 {
   cout<<str<<" i= "<<i<<" res= "<<res<<endl;
   if ( str == "QMR" ) {
-    if ( res < 0.1) return 1;
-    if ( i > 10000) return 2;
   }
   if ( str == "BiCG" ) {
-    if (res < 0.00001) return 1;
-    if ( i > 20000) return 2;
+    if (res > 100.0 ) return 2; 
   }
   if ( str == "BiCGSTAB" ) {
-    if (res < 0.0000001) return 1;
-    if ( i > 20000) return 2;
   }
   if ( str == "CGS" ) {
-    if (res < 0.00000001) return 1;
-    if ( i > 20000) return 2;
+    if (res > 1000.0 ) return 2;
   }
   return 0;
 }

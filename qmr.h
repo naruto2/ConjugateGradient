@@ -9,7 +9,7 @@ template < class Matrix, class Vector>
   QMR(Matrix &A, Vector &x, const Vector &b)
 {
   CRSinit(A);
-  long   n=A.size(), max_iter = 10*n;
+  long   max_iter = 10000;
   double resid, tol=0.00000000001;
   
   Vector rho(1), rho_1(1), xi(1), gamma(1), gamma_1(1), theta(1), theta_1(1);
@@ -54,10 +54,9 @@ template < class Matrix, class Vector>
 
     if (xi[0] == 0.0)
       return 7;                        // return on breakdown
-    v.clear();
-    v.resize(n);
-    y_ax(v,(1./rho[0]), v_tld);
-    y = (1. / rho[0]) * y;
+    t = v_tld;
+    v = (1./rho[0])*t;
+    y = (1./rho[0])*y;
 
     t = w_tld;
     w = (1./xi[0]) * t;
@@ -72,24 +71,24 @@ template < class Matrix, class Vector>
 
     if (i > 1) {
       t = y_tld;
-      y_ax(t, -(xi[0]*delta[0]/ep[0]), p);
-      p = t;
+      p = y_ax(t, -( xi[0]*delta[0]/ep[0]), p);
       t = z_tld;
-      y_ax(t, -(rho[0]*delta[0]/ep[0]), q);
-      q = t;
+      q = y_ax(t, -(rho[0]*delta[0]/ep[0]), q);
     } else {
       p = y_tld;
       q = z_tld;
     }
 
-    p_tld = A * p;
+    p_tld = A*p;
     ep[0] = dot(q, p_tld);
+
     if (ep[0] == 0.0)
       return 6;                        // return on breakdown
 
     beta[0] = ep[0] / delta[0];
     if (beta[0] == 0.0)
       return 3;                        // return on breakdown
+
     t = p_tld;
     v_tld = y_ax(t, -beta[0], v);
 
@@ -121,14 +120,19 @@ template < class Matrix, class Vector>
       Vector d1, d2, s1, s2;
       t = p;
       d1 = eta[0] * t;
-      d2 = (theta_1[0] * theta_1[0] * gamma[0] * gamma[0]) * d;
+      t = d;
+      d2 = (theta_1[0] * theta_1[0] * gamma[0] * gamma[0]) * t;
       d = d1 + d2;
-      s1 = eta[0] * p_tld;
-      s2 = (theta_1[0] * theta_1[0] * gamma[0] * gamma[0]) * s;
+      t = p_tld;
+      s1 = eta[0] * t;
+      t = s;
+      s2 = (theta_1[0] * theta_1[0] * gamma[0] * gamma[0]) * t;
       s = s1 + s2;
     } else {
-      d = eta[0] * p;
-      s = eta[0] * p_tld;
+      t = p;
+      d = eta[0] * t;
+      t = p_tld;
+      s = eta[0] * t;
     }
 
     x = x + d;                            // update approximation vector

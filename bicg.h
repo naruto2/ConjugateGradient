@@ -4,7 +4,7 @@ BiCG(Matrix &A, Vector &x, const Vector &b)
 {
   CRSinit(A);
 
-  long   i, n=A.size(), max_iter=10*n;
+  long   i, max_iter=20000;
   double resid, tol=0.0000000000001;
   Vector rho_1(1), rho_2(1), alpha(1), beta(1);
   Vector z, ztilde, p, ptilde, q, qtilde;

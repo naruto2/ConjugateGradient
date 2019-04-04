@@ -4,7 +4,7 @@ BiCGSTAB(Matrix &A, Vector &x, const Vector &b)
 {
   CRSinit(A);
 
-  long i, n=A.size(), maxit=10*n, ret=SOLVERROR_NONE;
+  long i, maxit=20000, ret=SOLVERROR_NONE;
   double alpha, beta, omega=1.0, rho_1, rho_2=1.0, tol=0.000000000001,
     normb = nrm2(b);
   Vector p, phat, s, shat, t, v, r, rtilde;

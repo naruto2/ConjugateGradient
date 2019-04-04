@@ -1,0 +1,73 @@
+2019-4-4計測(予選) GTX-1080Ti
+Problem NO : 0
+|b - Ax|_inf = 2.10605e-11  (OK)
+
+real 0m1.325s
+
+
+Problem NO : 1
+|b - Ax|_inf = 2.874e-10  (OK)
+
+real 0m10.476s
+
+
+Problem NO : 2
+|b - Ax|_inf = 1.82808e-10  (OK)
+
+real 0m9.490s
+
+
+Problem NO : 3
+|b - Ax|_inf = 3.21734e-11  (OK)
+
+real 0m42.264s
+
+
+Problem NO : 4
+|b - Ax|_inf = 1.90921e-08  (OK)
+
+real 0m29.234s
+
+
+Problem NO : 5
+|b - Ax|_inf = 4.47035e-07  (OK)
+
+real 0m8.547s
+
+
+
+2019-4-4計測(本選) GTX-1080Ti
+Problem NO : 0
+|b - Ax|_inf = 2.20552e-11  (OK)
+
+real 0m1.288s
+
+
+Problem NO : 1
+|b - Ax|_inf = 5.51518e-09  (OK)
+
+real 1m37.501s
+
+
+Problem NO : 2
+|b - Ax|_inf = 6.29807e-08  (OK)
+
+real 0m33.612s
+
+
+Problem NO : 3
+|b - Ax|_inf = 5.19067e-08  (OK)
+
+real 2m12.810s
+
+
+Problem NO : 4
+|b - Ax|_inf = 2.7835e-10  (OK)
+
+real 0m43.515s
+
+
+Problem NO : 5
+|b - Ax|_inf = 2.88486e-05  (OK)
+
+real 0m15.848s

@@ -11,4 +11,13 @@ gpu: $(SRCS)
 	nvcc main.cu yosen.o -lcusparse -lcublas -o gpu
 
 clean: ;
-	rm -f ./a.out ./gpu ./main.cu ./yosen.o
+	rm -f ./a.out ./gpu ./main.cu ./yosen.o ./honsen.o
+
+speedtest: gpu
+	export PSC98=0; time ./gpu
+	export PSC98=1; time ./gpu
+	export PSC98=2; time ./gpu
+	export PSC98=3; time ./gpu
+	export PSC98=4; time ./gpu
+	export PSC98=5; time ./gpu
+

@@ -71,3 +71,9 @@ Problem NO : 5
 |b - Ax|_inf = 2.88486e-05  (OK)
 
 real 0m15.848s
+
+bcssstk18.mtx nan
+mcca.mtx  2.02199e-06
+nos1.mtx  -nan
+psmigr_2.mtx  7.63565e-09
+s3rmq4m1.mtx  -nan

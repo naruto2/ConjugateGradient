@@ -27,12 +27,13 @@ int progress(string str, long i, double res);
 #include "bicg.h"
 #include "qmr.h"
 #include "psc98.h"
+#include "mmio.h"
 
 template < class Matrix >
 int
 symmetric(Matrix& A)
 {
-  return 1;
+  return 0;
 }
 
 template < class Matrix, class Vector >
@@ -48,45 +49,45 @@ int
 solver(Matrix& A, Vector& x, const Vector&b)
 {
   Vector y = x; int ret = 0;
+  for(int k=0; k< 16; k++){
+    ret = QMR(A,x,b);
+    if ( ret == 0 ) return 0;
+    CRSinit(A);
+    if (resi(A,x,b)>resi(A,y,b)) x=y; else y=x;
+    CRSdestory(A);
 
-  ret = QMR(A,x,b);
-  if ( ret == 0 ) return 0;
-  CRSinit(A);
-  if (resi(A,x,b)>resi(A,y,b)) x=y; else y=x;
-  CRSdestory(A);
+    if(symmetric(A)) {
+      ret = ConjugateGradient(A,x,b);
+      if ( ret == 0 ) return 0;
+      CRSinit(A);
+      if (resi(A,x,b)>resi(A,y,b)) x=y; else y=x;
+      CRSdestory(A);
+    }
 
-  if(symmetric(A)) {
-    ret = ConjugateGradient(A,x,b);
+    ret = BiCG(A,x,b); 
+    if ( ret == 0 ) return 0;
+    CRSinit(A);
+    if (resi(A,x,b)>resi(A,y,b)) x=y; else y=x;
+    CRSdestory(A);
+
+    ret = BiCGSTAB(A,x,b);
+    if ( ret == 0 ) return 0; 
+    CRSinit(A);
+    if (resi(A,x,b)>resi(A,y,b)) x=y; else y=x;
+    CRSdestory(A);
+    
+    ret = CGS(A,x,b); 
+    if ( ret == 0 ) return 0;
+    CRSinit(A);
+    if (resi(A,x,b)>resi(A,y,b)) x=y; else y=x;
+    CRSdestory(A);
+    
+    ret = GMRES(A,x,b); 
     if ( ret == 0 ) return 0;
     CRSinit(A);
     if (resi(A,x,b)>resi(A,y,b)) x=y; else y=x;
     CRSdestory(A);
   }
-
-  ret = BiCG(A,x,b); 
-  if ( ret == 0 ) return 0;
-  CRSinit(A);
-  if (resi(A,x,b)>resi(A,y,b)) x=y; else y=x;
-  CRSdestory(A);
-  
-  ret = BiCGSTAB(A,x,b);
-  if ( ret == 0 ) return 0; 
-  CRSinit(A);
-  if (resi(A,x,b)>resi(A,y,b)) x=y; else y=x;
-  CRSdestory(A);
-  
-  ret = CGS(A,x,b); 
-  if ( ret == 0 ) return 0;
-  CRSinit(A);
-  if (resi(A,x,b)>resi(A,y,b)) x=y; else y=x;
-  CRSdestory(A);
-
-  ret = GMRES(A,x,b); 
-  if ( ret == 0 ) return 0;
-  CRSinit(A);
-  if (resi(A,x,b)>resi(A,y,b)) x=y; else y=x;
-  CRSdestory(A);
-  
   return 1;
 }
 
@@ -94,14 +95,23 @@ int progress(string str, long i, double res)
 {
   cout<<str<<" i= "<<i<<" res= "<<res<<endl;
   if ( str == "QMR" ) {
+    if ( res != res ) return 3;
   }
   if ( str == "BiCG" ) {
-    if (res > 100.0 ) return 2; 
+    if ( res > 10000.0 ) return 2; 
+    if ( res != res ) return 3;
   }
   if ( str == "BiCGSTAB" ) {
+    if ( res > 10000.0 ) return 2; 
+    if ( res != res ) return 3;
   }
   if ( str == "CGS" ) {
-    if (res > 1000.0 ) return 2;
+    if ( res > 10000.0 ) return 2;
+    if ( res != res ) return 3;
+  }
+  if ( str == "GMRES" ) {
+    if ( res > 10000.0 ) return 2;
+    if ( res != res ) return 3;
   }
   return 0;
 }

@@ -59,22 +59,25 @@ int
 GMRES(Matrix &A, Vector &x, const Vector &b)
 {
   CRSinit(A);
-  
-  long i, j = 1, k, jj, m = 100, n=A.size(), maxit=10*n,
+  printf("hello\n");
+  long i, j = 1, k, jj, m = 100, n=A.size(), maxit=20000,
     ret = SOLVERROR_NONE;
-  double beta, tol=0.0000000000001, normb = nrm2(M_solve(b));
-  Vector s(m+1), cs(m+1), sn(m+1), r, w, *v = new Vector[m+1];;
+  double beta, tol=0.000000000001, normb;
+  Vector s(m+1), cs(m+1), sn(m+1), r, w, *v = new Vector[m+1], t;
   Matrix H(n);
-  
-  r = M_solve(y_ax(-1.0*(A*x), 1.0, b));
-  beta = nrm2(r);
-  
-  if (normb == 0.0) normb = 1;
-  
-  if (nrm2(r)/normb < tol) goto end;
+  t = b;
+  normb = nrm2(M_solveGMRES(t));
 
+  r = M_solveGMRES(y_ax(-1.0*(A*x), 1.0, b));
+
+  beta = nrm2(r);
+  printf("world\n");
+  if (normb == 0.0) normb = 1;
+  printf("nrm2(r)/normb = %f\n",nrm2(r)/normb);
+  if (nrm2(r)/normb < tol) goto end;
+  printf("earth\n");
   while (j <  maxit) {
-    if ( j % 1 == 0 ) if(progress("GMRES",j,nrm2(r)/normb)!=0) {
+    if ( 1  ) if(progress("GMRES",j,nrm2(r)/normb)!=0) {
 	ret = 1;
 	goto end;
       }
@@ -85,8 +88,8 @@ GMRES(Matrix &A, Vector &x, const Vector &b)
     s[0] = beta;
     
     for (i = 0; i < m && j <= maxit; i++, j++) {
-      
-      w = M_solve(A * v[i]);
+      t = A*v[i];
+      w = M_solveGMRES(t);
       for (k = 0; k <= i; k++) {
         H[k][i] = dot(w, v[k]);
 	y_ax(w, -H[k][i], v[k]);
@@ -107,16 +110,18 @@ GMRES(Matrix &A, Vector &x, const Vector &b)
       cs[i] = csi, sn[i] = sni, s[i] = si, s[i+1] = si1;
       
       si1 = s[i+1];
+
       if ( abs(si1)/normb < tol) {
         Update(x, i, H, s, v);
 	goto end;
       }
     }
     Update(x, m-1, H, s, v);
-
-    r = M_solve(y_ax(-1.0*(A*x), 1.0, b));
+    t = y_ax(-1.0*(A*x), 1.0, b);
+    r = M_solveGMRES(t);
 
     beta = nrm2(r);
+
     if ( beta/normb < tol) goto end;
   }
   ret = SOLVERROR_MAXIT;

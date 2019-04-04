@@ -49,7 +49,9 @@ BiCG(Matrix &A, Vector &x, const Vector &b)
       ptilde = t;
     }
     q = A * p;
-    qtilde = trans_mult(A,ptilde);
+
+    qtilde = trans_mult(A, ptilde);
+
     alpha[0] = rho_1[0] / dot(ptilde, q);
 
     y_ax(x, alpha[0], p);

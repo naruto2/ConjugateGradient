@@ -2,7 +2,7 @@
 #define OPERATOR_H
 
 #define M_solve(p) p
-#define trans_mult(A,x) A*x
+
 #define M_trans_solve(x) x
 
 
@@ -17,6 +17,33 @@ void printv(Vector &x)
 
 
 #ifndef noGPU
+
+static device_matrix<double> D;
+static CRSdata dCRS;
+
+void M_init(device_matrix<double>& A)
+{
+  long n = A.size();
+  double d;
+  D.resize(n);
+  for (long i=0; i<n; i++) {
+    d = A[i][i];
+    if (d !=0.0) D[i][i] = 1.0/d;
+    else D[i][i] = 10000000.0;
+  }
+  if ( cublas_cusparse_init(dCRS) != 0 )
+    exit(EXIT_FAILURE);
+  matrix2CRS(D,dCRS);
+}
+
+device_vector<double>& M_solveGMRES(device_vector<double>& p)
+{
+  long n = p.size();
+  static device_vector<double> x(n);
+  y_Ax(dev(x), dCRS, dev(p));
+  return x;
+}
+
 double dot(const device_vector<double>&x, const device_vector<double>&y){
   double rho;
   long N = x.size();
@@ -39,6 +66,16 @@ device_vector<double>& operator*(const device_matrix<double>& A,
   y_Ax(dev(x), gCRS, dev(b));
   return x;
 }
+
+device_vector<double>& trans_mult(const device_matrix<double>& A,
+				  device_vector<double>& b)
+{
+  long N = b.size();
+  static device_vector<double> x(N);
+  y_ATx(dev(x), gCRS, dev(b));
+  return x;
+}
+
 
 
 

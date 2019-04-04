@@ -134,6 +134,20 @@ void y_Ax(double* resultPtr, CRSdata CRS, double* vectorPtr)
 		 &BETA, resultPtr);
 }
 
+
+void y_ATx(double* resultPtr, CRSdata CRS, double* vectorPtr)
+{
+  // CRSmv（CRS形式行列とベクトルの積）を実行
+  // y = α*Ax + β*y;
+  const double ALPHA = 1;
+  const double BETA = 0;
+  cusparseDcsrmv(CRS.cusparse, CUSPARSE_OPERATION_TRANSPOSE,
+		 CRS.N, CRS.N, CRS.n,
+		 &ALPHA, CRS.matDescr, CRS.val, CRS.row_ptr, CRS.col_ind,
+		 vectorPtr,
+		 &BETA, resultPtr);
+}
+
 #endif
 
 

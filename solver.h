@@ -28,6 +28,7 @@ int progress(string str, long i, double res);
 #include "qmr.h"
 #include "psc98.h"
 #include "mmio.h"
+#include "matrixmarket.h"
 
 template < class Matrix >
 int
@@ -48,47 +49,52 @@ template < class Matrix, class Vector >
 int
 solver(Matrix& A, Vector& x, const Vector&b)
 {
-  Vector y = x; int ret = 0;
+  solveGMRES=0;
+  M_init(A);
+  Vector y = x; int ret = 1;
   for(int k=0; k< 16; k++){
     ret = QMR(A,x,b);
-    if ( ret == 0 ) return 0;
+    if ( ret == 0 ) goto end;
     CRSinit(A);
     if (resi(A,x,b)>resi(A,y,b)) x=y; else y=x;
     CRSdestory(A);
 
     if(symmetric(A)) {
       ret = ConjugateGradient(A,x,b);
-      if ( ret == 0 ) return 0;
+      if ( ret == 0 ) goto end;
       CRSinit(A);
       if (resi(A,x,b)>resi(A,y,b)) x=y; else y=x;
       CRSdestory(A);
     }
 
     ret = BiCG(A,x,b); 
-    if ( ret == 0 ) return 0;
+    if ( ret == 0 ) goto end;
     CRSinit(A);
     if (resi(A,x,b)>resi(A,y,b)) x=y; else y=x;
     CRSdestory(A);
 
     ret = BiCGSTAB(A,x,b);
-    if ( ret == 0 ) return 0; 
+    if ( ret == 0 ) goto end; 
     CRSinit(A);
     if (resi(A,x,b)>resi(A,y,b)) x=y; else y=x;
     CRSdestory(A);
     
     ret = CGS(A,x,b); 
-    if ( ret == 0 ) return 0;
+    if ( ret == 0 ) goto end;
     CRSinit(A);
     if (resi(A,x,b)>resi(A,y,b)) x=y; else y=x;
     CRSdestory(A);
-    
+
+    if ( k>0 ) solveGMRES=1;
     ret = GMRES(A,x,b); 
-    if ( ret == 0 ) return 0;
+    if ( ret == 0 ) goto end;
     CRSinit(A);
     if (resi(A,x,b)>resi(A,y,b)) x=y; else y=x;
     CRSdestory(A);
   }
-  return 1;
+ end:
+  M_destory(A);
+  return ret;
 }
 
 int progress(string str, long i, double res)

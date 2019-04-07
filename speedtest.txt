@@ -72,8 +72,54 @@ Problem NO : 5
 
 real 0m15.848s
 
-bcssstk18.mtx nan
-mcca.mtx  2.02199e-06
-nos1.mtx  -nan
-psmigr_2.mtx  7.63565e-09
-s3rmq4m1.mtx  -nan
+
+2019-4-6
+bcssstk18.mtx  nan
+mcca.mtx       2.02199e-06
+nos1.mtx       -nan
+psmigr_2.mtx   7.63565e-09
+s3rmq4m1.mtx   -nan
+tols90.mtx     coredump
+fidap015.mtx   擬似解
+fidapm05.mtx   擬似解
+mhd3200b.mtx   nan(symmetric)
+rw136.mtx      coredump
+rw496.mtx      coredump
+bp__1000.mtx   coredump
+bp__1200.mtx   coredump
+bp__1400.mtx   coredump
+bp__1600.mtx   coredump
+bp___200.mtx   coredump
+bp___400.mtx   coredump 
+bp___600.mtx   coredump 
+bp___800.mtx   coredump 
+bp_____0.mtx   coredump 
+cavity09.mtx   1.29436e-07(擬似解)
+cavity13.mtx   (近似解)
+cavity14.mtx   1.02167e-07(近似解)
+cavity15.mtx   5.19594e-09(近似解)
+cavity20.mtx   1.01758e-08(近似解)
+cavity21.mtx   3.2878e-08(近似解)
+cavity22.mtx   1.92207e-08(近似解)
+cavity23.mtx   6.61992e-08(近似解)
+cavity24.mtx   1.57144e-08(近似解)
+cavity25.mtx   5.85801e-08(近似解)
+cavity26.mtx   6.22704e-07(近似解)
+cry10000.mtx   9.51314e-09
+cry2500.mtx    8.69975e-08
+dw8192.mtx     4.30072w-10
+e20r0500.mtx   2.73036e-08
+e20r1000.mtx   3.43e-06
+e20r2000.mtx   5.3758e-05
+e20r4000.mtx   1.61152e-05
+	       
+
+
+
+
+
+
+
+
+
+

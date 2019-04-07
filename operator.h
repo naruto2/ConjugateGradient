@@ -2,9 +2,8 @@
 #define OPERATOR_H
 
 #define M_solve(p) p
-
 #define M_trans_solve(x) x
-
+static int solveGMRES=0;
 
 template < class Vector >
 void printv(Vector &x)
@@ -19,7 +18,6 @@ void printv(Vector &x)
 #ifndef noGPU
 
 static device_matrix<double> D;
-static CRSdata dCRS;
 
 void M_init(device_matrix<double>& A)
 {
@@ -29,19 +27,23 @@ void M_init(device_matrix<double>& A)
   for (long i=0; i<n; i++) {
     d = A[i][i];
     if (d !=0.0) D[i][i] = 1.0/d;
-    else D[i][i] = 10000000.0;
+    else D[i][i] = 10.0;
   }
   if ( cublas_cusparse_init(dCRS) != 0 )
     exit(EXIT_FAILURE);
   matrix2CRS(D,dCRS);
 }
 
+
 device_vector<double>& M_solveGMRES(device_vector<double>& p)
 {
   long n = p.size();
   static device_vector<double> x(n);
-  y_Ax(dev(x), dCRS, dev(p));
-  return x;
+  if ( solveGMRES==1 ) {
+    y_Ax(dev(x), dCRS, dev(p));
+    return x;
+  }
+  return p;
 }
 
 double dot(const device_vector<double>&x, const device_vector<double>&y){
@@ -117,6 +119,20 @@ void axpy(long n, double *palpha,
 #endif
 
 
+void M_init(matrix<double>& A)
+{
+}
+
+void M_destory(matrix<double>& A)
+{
+}
+
+
+vector<double>& M_solveGMRES(vector<double>& x)
+{
+  return x;
+}
+
 vector<double>& operator+(vector<double>& y, vector<double>& x){
   int i, n = x.size();
   static vector<double> z(n);
@@ -186,6 +202,10 @@ Vector& y_ax(Vector& y, double alpha, const Vector& x) {
   return y;
 }
 
+vector<double>& trans_mult(matrix<double>& A, vector<double>& x)
+{
+  return A*x; //いずれ直す
+}
 
 template <class Matrix, class Vector>
 void getProb(Matrix& A, Vector& x, Vector& b)

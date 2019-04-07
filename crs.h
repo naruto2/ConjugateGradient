@@ -120,6 +120,14 @@ void CRSdestory(const device_matrix<double>& A) {
   cusparseDestroyMatDescr(gCRS.matDescr);
 }
 
+static CRSdata dCRS;
+
+void M_destory(const device_matrix<double>& A) {
+  cublasDestroy(dCRS.cublas);
+  cusparseDestroy(dCRS.cusparse);
+  cusparseDestroyMatDescr(dCRS.matDescr);
+}
+
 
 void y_Ax(double* resultPtr, CRSdata CRS, double* vectorPtr)
 {

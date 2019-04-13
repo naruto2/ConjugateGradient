@@ -1,15 +1,12 @@
-SRCS = main.c++ sparse.h crs.h operator.h solver.h \
-	ConjugateGradient.h cgs.h bicgstab.h gmres.h bicg.h qmr.h
+SRCS = main.c++ solver.h 
 
 a.out: $(SRCS)
-	cc -c yosen.c
-	c++ -Wall -DnoGPU main.c++ mmio.c++ yosen.o
+	c++ -Wall -DnoGPU -I. main.c++ src/mmio.c++ 
 
 gpu: $(SRCS)
 	ln -sf main.c++ main.cu
-	cc -c yosen.c
-	c++ -c mmio.c++
-	nvcc main.cu mmio.o yosen.o -lcusparse -lcublas -o gpu
+	c++ -c -I. src/mmio.c++
+	nvcc main.cu mmio.o -lcusparse -lcublas -o gpu
 
 clean: ;
 	rm -f ./a.out ./gpu ./main.cu ./yosen.o ./honsen.o ./mmio.o

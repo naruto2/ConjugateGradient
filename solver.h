@@ -11,24 +11,23 @@ using namespace thrust;
 
 #include <iostream>
 #include <cmath>
-#include "sparse.h"
+#include "solver/sparse.h"
 #define SOLVERROR_NONE      0
 #define SOLVERROR_MAXIT     1
 #define SOLVERROR_BREAKDOWN 2
 using namespace std;
 using namespace sparse;
 int progress(string str, long i, double res);
-#include "crs.h"
-#include "operator.h"
-#include "ConjugateGradient.h"
-#include "cgs.h"
-#include "bicgstab.h"
-#include "gmres.h"
-#include "bicg.h"
-#include "qmr.h"
-#include "psc98.h"
-#include "mmio.h"
-#include "matrixmarket.h"
+#include "solver/crs.h"
+#include "solver/operator.h"
+#include "solver/ConjugateGradient.h"
+#include "solver/cgs.h"
+#include "solver/bicgstab.h"
+#include "solver/gmres.h"
+#include "solver/bicg.h"
+#include "solver/qmr.h"
+#include "solver/mmio.h"
+#include "solver/matrixmarket.h"
 
 template < class Matrix >
 int
